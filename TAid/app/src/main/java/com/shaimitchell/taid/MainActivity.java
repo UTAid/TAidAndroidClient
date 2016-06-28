@@ -19,10 +19,15 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.shaimitchell.taid.BasicAuth;
 
 import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity {
+
+    private BasicAuth mBasicAuth = new BasicAuth();
+    public String resp;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,13 +37,14 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         // Instantiate the RequestQueue.
-        RequestQueue queue = Volley.newRequestQueue(this);
         final String url = "http://192.168.2.20:8000/api/v0/students/?format=json";
         final String url2 = "http://192.168.2.20:8000/api-auth/login";
 
         final TextView mTextView = (TextView)findViewById(R.id.text_view);
         final WebView mWebview = (WebView) findViewById(R.id.mWebview);
         WebSettings ws = mWebview.getSettings();
+
+        final RequestQueue queue = MySingleton.getInstance(this.getApplicationContext()).getRequestQueue();
 
         //Allows urls to load within webview
         mWebview.setWebViewClient(new WebViewClient());
@@ -48,8 +54,18 @@ public class MainActivity extends AppCompatActivity {
         if (button != null) {
             button.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-                    mWebview.setVisibility(View.VISIBLE);
-                    mWebview.loadUrl(url2);
+                    mBasicAuth.send(queue);
+                    mBasicAuth.setVariableChangeListener(new VariableChangeListener() {
+                        @Override
+                        public void onVariableChanged(Boolean variableThatHasChanged) {
+                            if (variableThatHasChanged){
+                                mTextView.setText(mBasicAuth.mResponse);
+                            }
+
+                        }
+                    });
+
+
                 }
             });
         }
