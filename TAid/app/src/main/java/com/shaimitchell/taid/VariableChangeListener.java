@@ -1,7 +1,7 @@
 package com.shaimitchell.taid;
 
 /**
- * Created by shaimitchell on 16-06-28.
+ * interface for a setting up a listener looking for a Boolean variable change
  */
 public interface VariableChangeListener {
     public void onVariableChanged(Boolean variableThatHasChanged);

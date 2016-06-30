@@ -21,27 +21,26 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by shaimitchell on 16-06-27.
+ *
  */
-public class BasicAuth implements VariableChangeListener{
+public class RestServices implements VariableChangeListener{
 
     private final String USERNAME = "test";
     private final String PASSWORD = "test";
-    public String mResponse = "";
-    public VariableChangeListener variableChangeListener;
+    public  String mResponse = "";
+    private VariableChangeListener variableChangeListener;
 
-    public boolean isChanged = false;
+    private boolean isChanged = false;
 
-    public void send(RequestQueue requestQueue) {
+    /**
+     * Sends a GET request to the URL (url). On a successful response from the database, it saves
+     * that response in a variable. On an error response, it also saves to a variable
+     * @param requestQueue A volley request queue
+     * @param url A String for the URL to request data from the database and saves the response to
+     *            a variable
+     */
+    public void sendGetRequest(RequestQueue requestQueue, String url) {
 
-//        Uri.Builder uri = new Uri.Builder();
-//        uri.scheme("https");
-//        uri.authority("192.168.2.20:8000");
-//        uri.path("api/v0/students/?format=json");
-
-        // URL to hit to get info for students
-//        String url = "http://192.168.2.20:8000/api/v0/students/?format=json";
-        String url = "http://142.1.90.52:8000/api/v0/students/?format=json";
         StringRequest request = new StringRequest(Request.Method.GET, url, listener,
                 errorListener) {
 
@@ -68,10 +67,13 @@ public class BasicAuth implements VariableChangeListener{
     Response.Listener<String> listener = new Response.Listener<String>() {
         @Override
         public void onResponse(String response) {
-            Log.d("SHAI","Success Response: " + response.toString());
-            resetIsChanged();
-            mResponse = response.toString();
+            Log.d("TEST","Success Response: " + response.toString());
             setIsChanged();
+            mResponse = response.toString();
+            if (isChanged && variableChangeListener != null){
+                variableChangeListener.onVariableChanged(isChanged);
+            }
+
         }
     };
 
@@ -79,20 +81,17 @@ public class BasicAuth implements VariableChangeListener{
         @Override
         public void onErrorResponse(VolleyError error) {
             if (error.networkResponse != null) {
-                Log.d("SHAI","Error Response code: " + error.networkResponse.statusCode);
-                resetIsChanged();
-                mResponse = "Error Response code: " + error.networkResponse.statusCode;
+                Log.d("TEST","Error Response code: " + error.networkResponse.statusCode);
                 setIsChanged();
+                mResponse = "Error Response code: " + error.networkResponse.statusCode;
             }
-
         }
     };
 
-
     @Override
     public void onVariableChanged(Boolean variableThatHasChanged) {
-        if (variableThatHasChanged){
-
+        if (variableThatHasChanged && variableChangeListener != null){
+            variableChangeListener.onVariableChanged(isChanged);
         }
 
     }
@@ -105,8 +104,8 @@ public class BasicAuth implements VariableChangeListener{
         if (isChanged){
             isChanged = false;
         }
-
     }
+
 
     public void setIsChanged(){
         isChanged = true;

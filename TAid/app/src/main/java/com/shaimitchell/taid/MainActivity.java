@@ -1,33 +1,23 @@
 package com.shaimitchell.taid;
 
-import android.content.Context;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.TextView;
-
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
-import com.shaimitchell.taid.BasicAuth;
 
-import org.json.JSONObject;
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-public class MainActivity extends AppCompatActivity {
-
-    private BasicAuth mBasicAuth = new BasicAuth();
-    public String resp;
-
+    private RestServices mRestServices = new RestServices();
+    public String url;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,48 +26,81 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // Instantiate the RequestQueue.
-        final String url = "http://192.168.2.20:8000/api/v0/students/?format=json";
-        final String url2 = "http://192.168.2.20:8000/api-auth/login";
+        // URL to hit to get info from database
+//        url = "http://192.168.2.20:8000/api/v0/students/?format=json";
+//        url = "http://192.168.2.20:8000/api/v0/students/testt123";
+//        url = "http://142.1.90.52:8000/api/v0/students/?format=json";
 
+        // TextView that holds the data returned from the database
         final TextView mTextView = (TextView)findViewById(R.id.text_view);
-        final WebView mWebview = (WebView) findViewById(R.id.mWebview);
-        WebSettings ws = mWebview.getSettings();
 
-        final RequestQueue queue = MySingleton.getInstance(this.getApplicationContext()).getRequestQueue();
+        // Instantiate the RequestQueue
+        final RequestQueue mRequestQueue = RequestQueueSingleton.getInstance(this.getApplicationContext()).getRequestQueue();
 
-        //Allows urls to load within webview
-        mWebview.setWebViewClient(new WebViewClient());
-        ws.setJavaScriptEnabled(true);
+        final Button allStudentsButton = (Button) findViewById(R.id.all_students_button);
+        final Button oneStudentButton = (Button) findViewById(R.id.one_student_button);
 
-        final Button button = (Button) findViewById(R.id.button);
-        if (button != null) {
-            button.setOnClickListener(new View.OnClickListener() {
+        if (allStudentsButton != null) {
+            allStudentsButton.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-                    mBasicAuth.send(queue);
-                    mBasicAuth.setVariableChangeListener(new VariableChangeListener() {
-                        @Override
-                        public void onVariableChanged(Boolean variableThatHasChanged) {
-                            if (variableThatHasChanged){
-                                mTextView.setText(mBasicAuth.mResponse);
+                    url = "http://192.168.2.20:8000/api/v0/students/?format=json";
+
+                    if (mRequestQueue != null) {
+                        mRestServices.sendGetRequest(mRequestQueue, url);
+                        mRestServices.setVariableChangeListener(new VariableChangeListener() {
+
+                            @Override
+                            public void onVariableChanged(Boolean variableThatHasChanged) {
+                                if (variableThatHasChanged && mTextView!= null) {
+                                    mTextView.setText(mRestServices.mResponse);
+                                    mRestServices.resetIsChanged();
+                                }
                             }
-
-                        }
-                    });
-
-
+                        });
+                    }
                 }
             });
         }
 
-        final Button button2 = (Button) findViewById(R.id.button2);
-        if (button2 != null) {
-            button2.setOnClickListener(new View.OnClickListener() {
+        if (oneStudentButton != null) {
+            oneStudentButton.setOnClickListener(new View.OnClickListener(){
+                @Override
                 public void onClick(View v) {
-                    mWebview.setVisibility(View.VISIBLE);
-                    mWebview.loadUrl(url);
+                    oneStudentButton.setOnClickListener(new View.OnClickListener() {
+                        public void onClick(View v) {
+                            url = "http://192.168.2.20:8000/api/v0/students/testt123";
+
+                            if (mRequestQueue != null) {
+                                mRestServices.sendGetRequest(mRequestQueue, url);
+                                mRestServices.setVariableChangeListener(new VariableChangeListener() {
+
+                                    @Override
+                                    public void onVariableChanged(Boolean variableThatHasChanged) {
+                                        if (variableThatHasChanged && mTextView!= null) {
+                                            mTextView.setText(mRestServices.mResponse);
+                                            mRestServices.resetIsChanged();
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    });
                 }
             });
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+
+        if (drawer != null) {
+            drawer.setDrawerListener(toggle);
+        }
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        if (navigationView != null) {
+            navigationView.setNavigationItemSelectedListener(this);
         }
     }
 
@@ -104,24 +127,28 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void displayRequest(String url, final TextView mTextview){
-        JsonObjectRequest jsObjRequest = new JsonObjectRequest
-                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
 
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        mTextview.setText("Response: " + response.toString());
-                    }
-                }, new Response.ErrorListener() {
+        if (id == R.id.nav_camera) {
+            // Handle the camera action
+        } else if (id == R.id.nav_gallery) {
 
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        mTextview.setText(error.toString());
+        } else if (id == R.id.nav_slideshow) {
 
-                    }
-                });
+        } else if (id == R.id.nav_manage) {
 
-        // Access the RequestQueue through your singleton class.
-        MySingleton.getInstance(this).addToRequestQueue(jsObjRequest);
+        } else if (id == R.id.nav_share) {
+
+        } else if (id == R.id.nav_send) {
+
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 }
