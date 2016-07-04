@@ -17,7 +17,11 @@ import com.android.volley.RequestQueue;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private RestServices mRestServices = new RestServices();
-    public String url;
+    private String protocol = "http://";
+    private String domain = "192.168.2.20";
+    private String port = ":8000/";
+    private String path;
+    private String url;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,13 +30,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // URL to hit to get info from database
-//        url = "http://192.168.2.20:8000/api/v0/students/?format=json";
-//        url = "http://192.168.2.20:8000/api/v0/students/testt123";
-//        url = "http://142.1.90.52:8000/api/v0/students/?format=json";
-
         // TextView that holds the data returned from the database
-        final TextView mTextView = (TextView)findViewById(R.id.text_view);
+        final TextView mTextView = (TextView) findViewById(R.id.text_view);
 
         // Instantiate the RequestQueue
         final RequestQueue mRequestQueue = RequestQueueSingleton.getInstance(this.getApplicationContext()).getRequestQueue();
@@ -40,18 +39,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         final Button allStudentsButton = (Button) findViewById(R.id.all_students_button);
         final Button oneStudentButton = (Button) findViewById(R.id.one_student_button);
 
+
         if (allStudentsButton != null) {
             allStudentsButton.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-                    url = "http://192.168.2.20:8000/api/v0/students/?format=json";
-
+                    path = "api/v0/students/?format=json";
+                    url = buildURL(protocol, domain, port, path);
                     if (mRequestQueue != null) {
                         mRestServices.sendGetRequest(mRequestQueue, url);
                         mRestServices.setVariableChangeListener(new VariableChangeListener() {
 
                             @Override
                             public void onVariableChanged(Boolean variableThatHasChanged) {
-                                if (variableThatHasChanged && mTextView!= null) {
+                                if (variableThatHasChanged && mTextView != null) {
                                     mTextView.setText(mRestServices.mResponse);
                                     mRestServices.resetIsChanged();
                                 }
@@ -63,20 +63,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
         if (oneStudentButton != null) {
-            oneStudentButton.setOnClickListener(new View.OnClickListener(){
+            oneStudentButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     oneStudentButton.setOnClickListener(new View.OnClickListener() {
                         public void onClick(View v) {
-                            url = "http://192.168.2.20:8000/api/v0/students/testt123";
-
+                            path = "api/v0/students/testt123";
+                            url = buildURL(protocol, domain, port, path);
                             if (mRequestQueue != null) {
                                 mRestServices.sendGetRequest(mRequestQueue, url);
                                 mRestServices.setVariableChangeListener(new VariableChangeListener() {
 
                                     @Override
                                     public void onVariableChanged(Boolean variableThatHasChanged) {
-                                        if (variableThatHasChanged && mTextView!= null) {
+                                        if (variableThatHasChanged && mTextView != null) {
                                             mTextView.setText(mRestServices.mResponse);
                                             mRestServices.resetIsChanged();
                                         }
@@ -91,7 +91,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                this, drawer, toolbar, R.string.navigation_drawer_open,
+                R.string.navigation_drawer_close);
 
         if (drawer != null) {
             drawer.setDrawerListener(toggle);
@@ -151,4 +152,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    public String buildURL(String protocol, String domain, String port, String path){
+        return protocol+domain+port+path;
+    }
 }
+
