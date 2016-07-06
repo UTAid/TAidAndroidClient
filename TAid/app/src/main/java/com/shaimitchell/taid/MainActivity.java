@@ -7,12 +7,15 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
 import android.widget.TextView;
 import com.android.volley.RequestQueue;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -23,6 +26,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private String path;
     private String url;
 
+    // TextView that holds the data returned from the database
+    TextView mTextView;
+
+    // Instantiate the RequestQueue
+    RequestQueue mRequestQueue;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,64 +40,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // TextView that holds the data returned from the database
-        final TextView mTextView = (TextView) findViewById(R.id.text_view);
-
-        // Instantiate the RequestQueue
-        final RequestQueue mRequestQueue = RequestQueueSingleton.getInstance(this.getApplicationContext()).getRequestQueue();
-
-        final Button allStudentsButton = (Button) findViewById(R.id.all_students_button);
-        final Button oneStudentButton = (Button) findViewById(R.id.one_student_button);
-
-
-        if (allStudentsButton != null) {
-            allStudentsButton.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    path = "api/v0/students/?format=json";
-                    url = buildURL(protocol, domain, port, path);
-                    if (mRequestQueue != null) {
-                        mRestServices.sendGetRequest(mRequestQueue, url);
-                        mRestServices.setVariableChangeListener(new VariableChangeListener() {
-
-                            @Override
-                            public void onVariableChanged(Boolean variableThatHasChanged) {
-                                if (variableThatHasChanged && mTextView != null) {
-                                    mTextView.setText(mRestServices.mResponse);
-                                    mRestServices.resetIsChanged();
-                                }
-                            }
-                        });
-                    }
-                }
-            });
-        }
-
-        if (oneStudentButton != null) {
-            oneStudentButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    oneStudentButton.setOnClickListener(new View.OnClickListener() {
-                        public void onClick(View v) {
-                            path = "api/v0/students/testt123";
-                            url = buildURL(protocol, domain, port, path);
-                            if (mRequestQueue != null) {
-                                mRestServices.sendGetRequest(mRequestQueue, url);
-                                mRestServices.setVariableChangeListener(new VariableChangeListener() {
-
-                                    @Override
-                                    public void onVariableChanged(Boolean variableThatHasChanged) {
-                                        if (variableThatHasChanged && mTextView != null) {
-                                            mTextView.setText(mRestServices.mResponse);
-                                            mRestServices.resetIsChanged();
-                                        }
-                                    }
-                                });
-                            }
-                        }
-                    });
-                }
-            });
-        }
+        mTextView = (TextView) findViewById(R.id.text_view);
+        mRequestQueue = RequestQueueSingleton.getInstance(this.getApplicationContext()).getRequestQueue();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -134,19 +88,158 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        if (id == R.id.all_steudents) {
+            path = "api/v0/students/?format=json";
+            url = buildURL(protocol, domain, port, path);
+            if (mRequestQueue != null) {
+                mRestServices.sendGetRequest(mRequestQueue, url);
+                mRestServices.setVariableChangeListener(new VariableChangeListener() {
 
-        } else if (id == R.id.nav_slideshow) {
+                    @Override
+                    public void onVariableChanged(Boolean variableThatHasChanged) {
+                        if (variableThatHasChanged && mTextView != null) {
+                            String resp = mRestServices.mResponse;
+                            try {
+                                JSONObject jsonResponse = new JSONObject(resp);
+                                JSONArray resultsResponse = jsonResponse.optJSONArray("results");
+                                resp = resultsResponse.toString();
 
-        } else if (id == R.id.nav_manage) {
+                            }catch(JSONException e){
+                                Log.d("JsonException", e.toString());
+                            }
+                            mTextView.setText(resp);
+                            mRestServices.resetIsChanged();
+                        }
+                    }
+                });
+            }
+        } else if (id == R.id.one_student) {
+            path = "api/v0/students/testt123";
+            url = buildURL(protocol, domain, port, path);
+            if (mRequestQueue != null) {
+                mRestServices.sendGetRequest(mRequestQueue, url);
+                mRestServices.setVariableChangeListener(new VariableChangeListener() {
 
-        } else if (id == R.id.nav_share) {
+                    @Override
+                    public void onVariableChanged(Boolean variableThatHasChanged) {
+                        if (variableThatHasChanged && mTextView != null) {
+                            mTextView.setText(mRestServices.mResponse);
+                            mRestServices.resetIsChanged();
+                        }
+                    }
+                });
+            }
 
-        } else if (id == R.id.nav_send) {
+        } else if (id == R.id.all_instructors) {
+            path = "api/v0/instructors/?format=json";
+            url = buildURL(protocol, domain, port, path);
+            if (mRequestQueue != null) {
+                mRestServices.sendGetRequest(mRequestQueue, url);
+                mRestServices.setVariableChangeListener(new VariableChangeListener() {
+
+                    @Override
+                    public void onVariableChanged(Boolean variableThatHasChanged) {
+                        if (variableThatHasChanged && mTextView != null) {
+                            String resp = mRestServices.mResponse;
+                            try {
+                                JSONObject jsonResponse = new JSONObject(resp);
+                                JSONArray resultsResponse = jsonResponse.optJSONArray("results");
+                                resp = resultsResponse.toString();
+
+                            }catch(JSONException e){
+                                Log.d("JsonException", e.toString());
+                            }
+                            mTextView.setText(resp);
+                            mRestServices.resetIsChanged();
+                        }
+                    }
+                });
+            }
+
+        } else if (id == R.id.all_teaching_assistants) {
+            path = "api/v0/teaching_assistants/?format=json";
+            url = buildURL(protocol, domain, port, path);
+            if (mRequestQueue != null) {
+                mRestServices.sendGetRequest(mRequestQueue, url);
+                mRestServices.setVariableChangeListener(new VariableChangeListener() {
+
+                    @Override
+                    public void onVariableChanged(Boolean variableThatHasChanged) {
+                        if (variableThatHasChanged && mTextView != null) {
+                            String resp = mRestServices.mResponse;
+                            try {
+                                JSONObject jsonResponse = new JSONObject(resp);
+                                JSONArray resultsResponse = jsonResponse.optJSONArray("results");
+                                resp = resultsResponse.toString();
+
+                            }catch(JSONException e){
+                                Log.d("JsonException", e.toString());
+                            }
+                            mTextView.setText(resp);
+                            mRestServices.resetIsChanged();
+                        }
+                    }
+                });
+            }
+
+        } else if (id == R.id.all_tutorials) {
+            path = "api/v0/tutorials/?format=json";
+            url = buildURL(protocol, domain, port, path);
+            if (mRequestQueue != null) {
+                mRestServices.sendGetRequest(mRequestQueue, url);
+                mRestServices.setVariableChangeListener(new VariableChangeListener() {
+
+                    @Override
+                    public void onVariableChanged(Boolean variableThatHasChanged) {
+                        if (variableThatHasChanged && mTextView != null) {
+                            String resp = mRestServices.mResponse;
+                            try {
+                                JSONObject jsonResponse = new JSONObject(resp);
+                                JSONArray resultsResponse = jsonResponse.optJSONArray("results");
+                                resp = resultsResponse.toString();
+
+                            }catch(JSONException e){
+                                Log.d("JsonException", e.toString());
+                            }
+                            mTextView.setText(resp);
+                            mRestServices.resetIsChanged();
+                        }
+                    }
+                });
+            }
+
+        } else if (id == R.id.all_practicals) {
+            path = "api/v0/practicals/?format=json";
+            url = buildURL(protocol, domain, port, path);
+            if (mRequestQueue != null) {
+                mRestServices.sendGetRequest(mRequestQueue, url);
+                mRestServices.setVariableChangeListener(new VariableChangeListener() {
+
+                    @Override
+                    public void onVariableChanged(Boolean variableThatHasChanged) {
+                        if (variableThatHasChanged && mTextView != null) {
+                            String resp = mRestServices.mResponse;
+                            try {
+                                JSONObject jsonResponse = new JSONObject(resp);
+                                JSONArray resultsResponse = jsonResponse.optJSONArray("results");
+                                resp = resultsResponse.toString();
+
+                            }catch(JSONException e){
+                                Log.d("JsonException", e.toString());
+                            }
+                            mTextView.setText(resp);
+                            mRestServices.resetIsChanged();
+                        }
+                    }
+                });
+            }
 
         }
+//        else if (id == R.id.nav_share) {
+//
+//        } else if (id == R.id.nav_send) {
+//
+//        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

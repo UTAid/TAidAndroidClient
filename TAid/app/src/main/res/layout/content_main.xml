@@ -16,29 +16,10 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
+        android:text="Welcome To TAid"
         android:id="@+id/text_view"
-        android:layout_below="@+id/toolbar"/>
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="all_students"
-        android:id="@+id/all_students_button"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:layout_below="@+id/text_view"/>
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/one_student_button"
-        android:text="one_student"
-        android:layout_below="@id/all_students_button"/>
+        android:layout_below="@+id/toolbar"
+        android:textSize="20dp"/>
 
-    <!--<Button-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:id="@+id/button3"-->
-        <!--android:text="Button3"-->
-        <!--android:layout_below="@id/one_student_button"/>-->
 
 </RelativeLayout>

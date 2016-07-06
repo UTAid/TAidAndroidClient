@@ -53,7 +53,7 @@ public class RestServices implements VariableChangeListener{
         requestQueue.add(request);
     }
 
-    Map<String, String> createBasicAuthHeader(String username, String password) {
+    public Map<String, String> createBasicAuthHeader(String username, String password) {
         Map<String, String> headerMap = new HashMap<String, String>();
 
         String credentials = username + ":" + password;
@@ -67,7 +67,7 @@ public class RestServices implements VariableChangeListener{
     Response.Listener<String> listener = new Response.Listener<String>() {
         @Override
         public void onResponse(String response) {
-            Log.d("TEST","Success Response: " + response.toString());
+            Log.d("TEST","Successful Response: " + response.toString());
             setIsChanged();
             mResponse = response.toString();
             if (isChanged && variableChangeListener != null){
@@ -110,4 +110,9 @@ public class RestServices implements VariableChangeListener{
     public void setIsChanged(){
         isChanged = true;
     }
+
+//    public String multiEntryResponseParser(String str){
+//        return str.substring(0, str.length() - 2).split("\"results\":")[1].replace("[", "");
+//        return str;
+//    }
 }
