@@ -3,11 +3,11 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/all_steudents"
+            android:id="@+id/all_students"
             android:title="All Students" />
-        <item
-            android:id="@+id/one_student"
-            android:title="One Student" />
+        <!--<item-->
+            <!--android:id="@+id/one_student"-->
+            <!--android:title="One Student" />-->
         <item
             android:id="@+id/all_instructors"
             android:title="Instructors" />

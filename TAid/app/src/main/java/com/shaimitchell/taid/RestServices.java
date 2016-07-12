@@ -1,15 +1,7 @@
 package com.shaimitchell.taid;
 
-import android.net.Uri;
 import android.util.Base64;
 import android.util.Log;
-import android.widget.TextView;
-import android.content.Context;
-import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.View;
-import android.view.Menu;
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -21,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- *
+ * Class to handle all the REST calls(PUT< GET, etc...)
  */
 public class RestServices implements VariableChangeListener{
 
@@ -106,13 +98,7 @@ public class RestServices implements VariableChangeListener{
         }
     }
 
-
     public void setIsChanged(){
         isChanged = true;
     }
-
-//    public String multiEntryResponseParser(String str){
-//        return str.substring(0, str.length() - 2).split("\"results\":")[1].replace("[", "");
-//        return str;
-//    }
 }
