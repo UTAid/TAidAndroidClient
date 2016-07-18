@@ -15,11 +15,21 @@
   - App should instantly run
 
 ### Version
-0.0.01
+0.0.02
 
 
 ### Todos
-##### Anya needs to assign more tasks!
- - Write Tests
- - Rethink Github Save
- - Add Code Comments
+#### Anya needs to assign more tasks!
+ - Get Offline mode working
+ - Research similar workflow apps, and see what we could use 
+ - class list, best way to display it
+    - last name, first name: click to display fully
+    - should not be editable
+    - be able to add and flag "hey you just added ----"
+    - 
+ - tutorail instruction are just text, want to display it
+    - enable highlighting 
+    - enable adding comments
+      - "something was done", "something was not done" 
+  - make it modular!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    -example: if i want to edit a teams mark, simply click on one of the members and be able to edit the team's mark
