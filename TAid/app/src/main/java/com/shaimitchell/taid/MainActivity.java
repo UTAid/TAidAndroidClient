@@ -14,6 +14,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,12 +25,14 @@ import com.shaimitchell.taid.Fragments.MultiEntryFragment;
 import com.shaimitchell.taid.LocalDb.DbAdapter;
 import com.shaimitchell.taid.Models.Student;
 
+import java.net.InetAddress;
+
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, MultiEntryFragment.OnFragmentInteractionListener {
 
     private RestServices mRestServices = new RestServices();
     private String protocol = "http://";
-    private String domain = "192.168.2.20";
-    private String port = ":8000/";
+    private String domain = "192.168.0.13";
+    private String port = ":8001/";
     private String path;
     private String url;
     Context context;
@@ -114,10 +117,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (id == R.id.all_students) {
             path = "api/v0/students/?format=json";
             url = buildURL(protocol, domain, port, path);
+            Log.i("check", "step 1");
             if (mRequestQueue != null) {
                 mRestServices.sendGetRequest(mRequestQueue, url);
                 mRestServices.setVariableChangeListener(new VariableChangeListener() {
-
+                    // this is where we need to check . this is all wrong, need to redo!
                     @Override
                     public void onVariableChanged(Boolean variableThatHasChanged) {
                         if (variableThatHasChanged && mTextView != null) {
@@ -127,14 +131,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                             fragmentTransaction.add(R.id.fragment_container, studentFragment, "HELLO");
                             fragmentTransaction.commit();
-                        }else if (!isNetworkAvailable()){
+                        }else if (!isInternetAvailable()){
+                            Log.i("check", "please work");
                             Cursor cursor = dbAdapter.getAllStudents();
                             MultiEntryFragment studentFragment = new MultiEntryFragment().newInstance("", FRAG_TYPE.STUDENT, cursor);
                             fragmentManager = getSupportFragmentManager();
                             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                             fragmentTransaction.add(R.id.fragment_container, studentFragment, "HELLO");
                             fragmentTransaction.commit();
-
                         }
                     }
                 });
@@ -243,6 +247,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
+
+    public boolean isInternetAvailable() {
+        try {
+            InetAddress ipAddr = InetAddress.getByName("google.com"); //You can replace it with your name
+            return !ipAddr.equals("");
+
+        } catch (Exception e) {
+            return false;
+        }
+
+    }
     @Override
     public void onFragmentInteraction(boolean bool) {
 
