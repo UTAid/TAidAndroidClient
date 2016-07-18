@@ -1,6 +1,9 @@
 package com.shaimitchell.taid;
 
 import android.content.Context;
+import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -18,6 +21,8 @@ import android.widget.TextView;
 import com.android.volley.RequestQueue;
 import com.shaimitchell.taid.Enums.FRAG_TYPE;
 import com.shaimitchell.taid.Fragments.MultiEntryFragment;
+import com.shaimitchell.taid.LocalDb.DbAdapter;
+import com.shaimitchell.taid.Models.Student;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, MultiEntryFragment.OnFragmentInteractionListener {
 
@@ -28,17 +33,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private String path;
     private String url;
     Context context;
-    private VariableChangeListener variableChangeListener;
-    private boolean varToChange = false;
-
-    // TextView that holds the data returned from the database
     TextView mTextView;
-
-    // Instantiate the RequestQueue
     RequestQueue mRequestQueue;
-
     FragmentManager fragmentManager;
+    DbAdapter dbAdapter;
 
+    private boolean varToChange = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +50,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mTextView = (TextView) findViewById(R.id.text_view);
         mRequestQueue = RequestQueueSingleton.getInstance(this.getApplicationContext()).getRequestQueue();
 
+        dbAdapter = new DbAdapter(this);
+
         context = this;
 
 
@@ -60,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         if (drawer != null) {
             drawer.setDrawerListener(toggle);
+//            drawer.addDrawerListener(toggle);
         }
         toggle.syncState();
 
@@ -119,11 +122,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     public void onVariableChanged(Boolean variableThatHasChanged) {
                         if (variableThatHasChanged && mTextView != null) {
                             String resp = mRestServices.mResponse;
-                            MultiEntryFragment studentFragment = new MultiEntryFragment().newInstance(resp, FRAG_TYPE.STUDENT);
+                            MultiEntryFragment studentFragment = new MultiEntryFragment().newInstance(resp, FRAG_TYPE.STUDENT, null);
                             fragmentManager = getSupportFragmentManager();
                             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                             fragmentTransaction.add(R.id.fragment_container, studentFragment, "HELLO");
                             fragmentTransaction.commit();
+                        }else if (!isNetworkAvailable()){
+                            Cursor cursor = dbAdapter.getAllStudents();
+                            MultiEntryFragment studentFragment = new MultiEntryFragment().newInstance("", FRAG_TYPE.STUDENT, cursor);
+                            fragmentManager = getSupportFragmentManager();
+                            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                            fragmentTransaction.add(R.id.fragment_container, studentFragment, "HELLO");
+                            fragmentTransaction.commit();
+
                         }
                     }
                 });
@@ -139,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     public void onVariableChanged(Boolean variableThatHasChanged) {
                         if (variableThatHasChanged && mTextView != null) {
                             String resp = mRestServices.mResponse;
-                            MultiEntryFragment instructorFragment = new MultiEntryFragment().newInstance(resp, FRAG_TYPE.INSTRUCTOR);
+                            MultiEntryFragment instructorFragment = new MultiEntryFragment().newInstance(resp, FRAG_TYPE.INSTRUCTOR, null);
                             fragmentManager = getSupportFragmentManager();
                             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                             fragmentTransaction.add(R.id.fragment_container, instructorFragment, "HELLO");
@@ -160,7 +171,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     public void onVariableChanged(Boolean variableThatHasChanged) {
                         if (variableThatHasChanged && mTextView != null) {
                             String resp = mRestServices.mResponse;
-                            MultiEntryFragment teachingAssistantFragment = new MultiEntryFragment().newInstance(resp, FRAG_TYPE.TEACHING_ASSISTANT);
+                            MultiEntryFragment teachingAssistantFragment = new MultiEntryFragment().newInstance(resp, FRAG_TYPE.TEACHING_ASSISTANT, null);
                             fragmentManager = getSupportFragmentManager();
                             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                             fragmentTransaction.add(R.id.fragment_container, teachingAssistantFragment, "HELLO");
@@ -181,7 +192,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     public void onVariableChanged(Boolean variableThatHasChanged) {
                         if (variableThatHasChanged && mTextView != null) {
                             String resp = mRestServices.mResponse;
-                            MultiEntryFragment tutorialFragment = new MultiEntryFragment().newInstance(resp, FRAG_TYPE.TUTORIAL);
+                            MultiEntryFragment tutorialFragment = new MultiEntryFragment().newInstance(resp, FRAG_TYPE.TUTORIAL, null);
                             fragmentManager = getSupportFragmentManager();
                             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                             fragmentTransaction.add(R.id.fragment_container, tutorialFragment, "HELLO");
@@ -202,7 +213,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     public void onVariableChanged(Boolean variableThatHasChanged) {
                         if (variableThatHasChanged && mTextView != null) {
                             String resp = mRestServices.mResponse;
-                            MultiEntryFragment practicalFragment = new MultiEntryFragment().newInstance(resp, FRAG_TYPE.PRACTICAL);
+                            MultiEntryFragment practicalFragment = new MultiEntryFragment().newInstance(resp, FRAG_TYPE.PRACTICAL, null);
                             fragmentManager = getSupportFragmentManager();
                             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                             fragmentTransaction.add(R.id.fragment_container, practicalFragment, "HELLO");
@@ -223,9 +234,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return protocol+domain+port+path;
     }
 
+
+    // returns true if the device is connected to the internet
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
     @Override
     public void onFragmentInteraction(boolean bool) {
 
     }
+
+
 }
 

@@ -1,7 +1,9 @@
 package com.shaimitchell.taid.Fragments;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,6 +13,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.shaimitchell.taid.Enums.FRAG_TYPE;
+import com.shaimitchell.taid.LocalDb.DbAdapter;
+import com.shaimitchell.taid.LocalDb.TAidDbHandler;
+import com.shaimitchell.taid.Models.Student;
 import com.shaimitchell.taid.R;
 
 import org.json.JSONArray;
@@ -29,6 +34,7 @@ public class MultiEntryFragment extends Fragment {
     private String fragTitle;
     private FRAG_TYPE fragmentType;
     private OnFragmentInteractionListener mListener;
+    private Cursor mCursor;
 
     public MultiEntryFragment() {
         // Required empty public constructor
@@ -41,8 +47,9 @@ public class MultiEntryFragment extends Fragment {
      * @param entry - the entries to be displayed
      * @param fragType - the type of data that is to be
      */
-    // TODO: Rename and change types and number of parameters
-    public static MultiEntryFragment newInstance(String entry, FRAG_TYPE fragType) {
+    public static MultiEntryFragment newInstance(String entry, FRAG_TYPE fragType,
+                                                 @Nullable Cursor cursor) {
+
         MultiEntryFragment fragment = new MultiEntryFragment();
         Bundle args = new Bundle();
         String fType;
@@ -71,6 +78,9 @@ public class MultiEntryFragment extends Fragment {
         args.putString(FRAG_TYPE, fType);
         fragment.setArguments(args);
         fragment.fragmentType = fragType;
+        if (cursor != null){
+            fragment.mCursor = cursor;
+        }
         return fragment;
     }
 
@@ -159,40 +169,54 @@ public class MultiEntryFragment extends Fragment {
      * @param root - the root layout of the fragment
      */
     private void setupStudentResponse(LinearLayout root){
-        String url;
-        String universityID;
-        String studentNumber;
-        String firstName;
-        String lastName;
-        String email;
 
-        String entry="";
+        String entry;
 
-        try {
-            JSONObject jsonResponse = new JSONObject(dbEntry);
-            JSONArray resultsResponse = jsonResponse.optJSONArray("results");
+        Student student;
 
-            for (int i = 0; i < resultsResponse.length(); i++){
-                JSONObject jsonData = resultsResponse.getJSONObject(i);
-                url = jsonData.getString("url");
-                universityID = jsonData.getString("university_id");
-                studentNumber = jsonData.getString("student_number");
-                firstName = jsonData.getString("first_name");
-                lastName = jsonData.getString("last_name");
-                email = jsonData.getString("email");
+        if (mCursor == null) {
 
-                entry = "url: \t" + url +"\n"+
-                        "university_id: \t" + universityID +"\n"+
-                        "student_number: \t" + studentNumber +"\n"+
-                        "first_name: \t" + firstName +"\n"+
-                        "last_name: \t" + lastName +"\n"+
-                        "email: \t" + email  +"\n";
+            try {
+                JSONObject jsonResponse = new JSONObject(dbEntry);
+                JSONArray resultsResponse = jsonResponse.optJSONArray("results");
+
+                for (int i = 0; i < resultsResponse.length(); i++) {
+                    JSONObject jsonData = resultsResponse.getJSONObject(i);
+                    student = new Student(jsonData.getString("url"),
+                            jsonData.getString("university_id"),
+                            jsonData.getString("student_number"),
+                            jsonData.getString("first_name"),
+                            jsonData.getString("last_name"),
+                            jsonData.getString("email"));
+
+                    entry = "url: \t" + student.getUrl() + "\n" +
+                            "university_id: \t" + student.getUniversityId() + "\n" +
+                            "student_number: \t" + student.getStudentNumber() + "\n" +
+                            "first_name: \t" + student.getFirstName() + "\n" +
+                            "last_name: \t" + student.getLastName() + "\n" +
+                            "email: \t" + student.getEmail() + "\n";
+
+                    DbAdapter dbAdapter = new DbAdapter(getContext());
+                    dbAdapter.addStudent(student);
+                    TextView mTextView = new TextView(getContext());
+                    mTextView.setText(entry);
+                    root.addView(mTextView);
+                }
+            } catch (JSONException e) {
+                Log.d("JsonException", e.toString());
+            }
+        }else{
+            if(mCursor.moveToFirst()){
+                entry = "url: \t" + mCursor.getString(1) + "\n" +
+                        "university_id: \t" + mCursor.getString(2) + "\n" +
+                        "student_number: \t" + mCursor.getString(3) + "\n" +
+                        "first_name: \t" + mCursor.getString(4) + "\n" +
+                        "last_name: \t" + mCursor.getString(5) + "\n" +
+                        "email: \t" + mCursor.getString(6) + "\n";
                 TextView mTextView = new TextView(getContext());
                 mTextView.setText(entry);
                 root.addView(mTextView);
             }
-        }catch(JSONException e){
-            Log.d("JsonException", e.toString());
         }
     }
 
