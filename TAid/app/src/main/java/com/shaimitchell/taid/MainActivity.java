@@ -118,30 +118,41 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             path = "api/v0/students/?format=json";
             url = buildURL(protocol, domain, port, path);
             Log.i("check", "step 1");
-            if (mRequestQueue != null) {
-                mRestServices.sendGetRequest(mRequestQueue, url);
-                mRestServices.setVariableChangeListener(new VariableChangeListener() {
-                    // this is where we need to check . this is all wrong, need to redo!
-                    @Override
-                    public void onVariableChanged(Boolean variableThatHasChanged) {
-                        if (variableThatHasChanged && mTextView != null) {
-                            String resp = mRestServices.mResponse;
-                            MultiEntryFragment studentFragment = new MultiEntryFragment().newInstance(resp, FRAG_TYPE.STUDENT, null);
-                            fragmentManager = getSupportFragmentManager();
-                            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                            fragmentTransaction.add(R.id.fragment_container, studentFragment, "HELLO");
-                            fragmentTransaction.commit();
-                        }else if (!isInternetAvailable()){
-                            Log.i("check", "please work");
-                            Cursor cursor = dbAdapter.getAllStudents();
-                            MultiEntryFragment studentFragment = new MultiEntryFragment().newInstance("", FRAG_TYPE.STUDENT, cursor);
-                            fragmentManager = getSupportFragmentManager();
-                            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                            fragmentTransaction.add(R.id.fragment_container, studentFragment, "HELLO");
-                            fragmentTransaction.commit();
+            if (isConnected(this)) {
+                if (mRequestQueue != null) {
+                    mRestServices.sendGetRequest(mRequestQueue, url);
+                    mRestServices.setVariableChangeListener(new VariableChangeListener() {
+                        // this is where we need to check . this is all wrong, need to redo!
+                        @Override
+                        public void onVariableChanged(Boolean variableThatHasChanged) {
+                            if (variableThatHasChanged && mTextView != null) {
+                                String resp = mRestServices.mResponse;
+                                MultiEntryFragment studentFragment = new MultiEntryFragment().newInstance(resp, FRAG_TYPE.STUDENT, null);
+                                fragmentManager = getSupportFragmentManager();
+                                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                fragmentTransaction.add(R.id.fragment_container, studentFragment, "HELLO");
+                                fragmentTransaction.commit();
+                            }
+//                            else if (!isInternetAvailable()) {
+//                                Log.i("check", "please work");
+//                                Cursor cursor = dbAdapter.getAllStudents();
+//                                MultiEntryFragment studentFragment = new MultiEntryFragment().newInstance("", FRAG_TYPE.STUDENT, cursor);
+//                                fragmentManager = getSupportFragmentManager();
+//                                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//                                fragmentTransaction.add(R.id.fragment_container, studentFragment, "HELLO");
+//                                fragmentTransaction.commit();
+//                            }
                         }
-                    }
-                });
+                    });
+                }
+            }else{
+                Log.i("check", "please work");
+                Cursor cursor = dbAdapter.getAllStudents();
+                MultiEntryFragment studentFragment = new MultiEntryFragment().newInstance("", FRAG_TYPE.STUDENT, cursor);
+                fragmentManager = getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.add(R.id.fragment_container, studentFragment, "HELLO");
+                fragmentTransaction.commit();
             }
         } else if (id == R.id.all_instructors) {
             path = "api/v0/instructors/?format=json";
@@ -241,10 +252,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     // returns true if the device is connected to the internet
     private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+        ConnectivityManager cm =
+                (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+        return isConnected;
+
+    }
+
+    public static boolean isConnected(Context context) {
+        ConnectivityManager
+                cm = (ConnectivityManager) context.getApplicationContext()
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        return activeNetwork != null
+                && activeNetwork.isConnectedOrConnecting();
     }
 
 
