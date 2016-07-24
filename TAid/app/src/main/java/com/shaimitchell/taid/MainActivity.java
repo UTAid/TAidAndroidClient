@@ -151,6 +151,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 Log.i("check", "please work");
                 Cursor cursor = dbAdapter.getAllStudents();
                 MultiEntryFragment studentFragment = new MultiEntryFragment().newInstance("", FRAG_TYPE.STUDENT, cursor);
+                Log.i("test", String.valueOf(studentFragment));
                 fragmentManager = getSupportFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.add(R.id.fragment_container, studentFragment, "HELLO");
