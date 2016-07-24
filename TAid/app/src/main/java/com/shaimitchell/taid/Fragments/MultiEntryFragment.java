@@ -197,7 +197,7 @@ public class MultiEntryFragment extends Fragment {
                             "email: \t" + student.getEmail() + "\n";
 
                     DbAdapter dbAdapter = new DbAdapter(getContext());
-                    dbAdapter.addStudent(student);
+                    //.addStudent(student);
                     TextView mTextView = new TextView(getContext());
                     mTextView.setText(entry);
                     root.addView(mTextView);
