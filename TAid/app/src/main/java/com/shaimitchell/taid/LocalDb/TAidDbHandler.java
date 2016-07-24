@@ -18,16 +18,17 @@ public class TAidDbHandler extends SQLiteOpenHelper {
 
     private static final String TEXT_TYPE = " TEXT";
     private static final String COMMA_SEP = ",";
-    private static final String CREATE_STUDENT_TABLE =
+    public static final String CREATE_STUDENT_TABLE =
             "CREATE TABLE IF NOT EXISTS " + DbContract.StudentTable.TABLE_NAME + " (" +
-                    DbContract.StudentTable. _ID + " INTEGER PRIMARY KEY," +
+                    DbContract.StudentTable. _ID + " INTEGER " + COMMA_SEP +
                     DbContract.StudentTable.COLUMN_NAME_URL + TEXT_TYPE + COMMA_SEP +
-                    DbContract.StudentTable.COLUMN_NAME_STUDENT_NUMBER + TEXT_TYPE + COMMA_SEP +
+                    DbContract.StudentTable.COLUMN_NAME_STUDENT_NUMBER + TEXT_TYPE +" NOT NULL"+ COMMA_SEP +
                     DbContract.StudentTable.COLUMN_NAME_UNIVERSITY_ID + TEXT_TYPE + COMMA_SEP +
                     DbContract.StudentTable.COLUMN_NAME_FIRST_NAME + TEXT_TYPE + COMMA_SEP +
                     DbContract.StudentTable.COLUMN_NAME_LAST_NAME + TEXT_TYPE + COMMA_SEP +
-                    DbContract.StudentTable.COLUMN_NAME_EMAIL + TEXT_TYPE + " )";
-    private static final String DELETE_STUDENT_TABLE =
+                    DbContract.StudentTable.COLUMN_NAME_EMAIL + TEXT_TYPE + COMMA_SEP +
+                    "PRIMARY KEY ("+ DbContract.StudentTable._ID + COMMA_SEP+ DbContract.StudentTable.COLUMN_NAME_STUDENT_NUMBER + ")"+  " )";
+    public static final String DELETE_STUDENT_TABLE =
             "DROP TABLE IF EXISTS " + DbContract.StudentTable.TABLE_NAME;
 
     public static synchronized TAidDbHandler getInstance(Context context) {
@@ -46,6 +47,7 @@ public class TAidDbHandler extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        db.execSQL(DELETE_STUDENT_TABLE);
         db.execSQL(CREATE_STUDENT_TABLE);
     }
 
@@ -55,5 +57,7 @@ public class TAidDbHandler extends SQLiteOpenHelper {
         db.execSQL(DELETE_STUDENT_TABLE);
         onCreate(db);
     }
+
+
 
 }

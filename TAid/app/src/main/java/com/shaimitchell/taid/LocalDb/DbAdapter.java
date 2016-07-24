@@ -44,16 +44,18 @@ public class DbAdapter {
         database.beginTransaction();
         try {
             long newRowId;
-            newRowId = database.insert(DbContract.StudentTable.TABLE_NAME, null, values);
+            newRowId = database.insertWithOnConflict(DbContract.StudentTable.TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
 
             if (newRowId == -1) {
                 Log.d("INSERTION_ERROR", "Failure to insert row");
             }
+            Log.d("INSERTION", Long.toString(newRowId));
         } catch (Exception e) {
             Log.d("INSERTION_ERROR", "Failure to insert row");
         }
-
+        database.setTransactionSuccessful();
         database.endTransaction();
+
         this.close();
     }
 
@@ -62,9 +64,15 @@ public class DbAdapter {
 
         this.open();
         Cursor cursor = database.rawQuery(query,null);
-        this.close();
+//        this.close();
 
         return cursor;
     }
 
+    public void resetDb(){
+        open();
+        database.execSQL(dbHandler.DELETE_STUDENT_TABLE);
+        database.execSQL(dbHandler.CREATE_STUDENT_TABLE);
+        close();
+    }
 }

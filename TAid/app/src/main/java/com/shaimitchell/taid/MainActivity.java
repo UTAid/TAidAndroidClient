@@ -31,8 +31,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private RestServices mRestServices = new RestServices();
     private String protocol = "http://";
-    private String domain = "192.168.0.13";
-    private String port = ":8001/";
+    private String domain = "192.168.2.20";
+    private String port = ":8000/";
     private String path;
     private String url;
     Context context;
@@ -54,6 +54,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mRequestQueue = RequestQueueSingleton.getInstance(this.getApplicationContext()).getRequestQueue();
 
         dbAdapter = new DbAdapter(this);
+        dbAdapter.resetDb();
+        dbAdapter = new DbAdapter(this);
 
         context = this;
 
@@ -64,8 +66,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 R.string.navigation_drawer_close);
 
         if (drawer != null) {
-            drawer.setDrawerListener(toggle);
-//            drawer.addDrawerListener(toggle);
+//            drawer.setDrawerListener(toggle);
+            drawer.addDrawerListener(toggle);
         }
         toggle.syncState();
 

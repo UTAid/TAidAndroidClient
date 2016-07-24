@@ -206,16 +206,23 @@ public class MultiEntryFragment extends Fragment {
                 Log.d("JsonException", e.toString());
             }
         }else{
-            if(mCursor.moveToFirst()){
-                entry = "url: \t" + mCursor.getString(1) + "\n" +
-                        "university_id: \t" + mCursor.getString(2) + "\n" +
-                        "student_number: \t" + mCursor.getString(3) + "\n" +
-                        "first_name: \t" + mCursor.getString(4) + "\n" +
-                        "last_name: \t" + mCursor.getString(5) + "\n" +
-                        "email: \t" + mCursor.getString(6) + "\n";
-                TextView mTextView = new TextView(getContext());
-                mTextView.setText(entry);
-                root.addView(mTextView);
+            if(mCursor.moveToFirst()) {
+                try {
+                    while (!mCursor.isAfterLast()) {
+                        entry = "url: \t" + mCursor.getString(1) + "\n" +
+                                "university_id: \t" + mCursor.getString(2) + "\n" +
+                                "student_number: \t" + mCursor.getString(3) + "\n" +
+                                "first_name: \t" + mCursor.getString(4) + "\n" +
+                                "last_name: \t" + mCursor.getString(5) + "\n" +
+                                "email: \t" + mCursor.getString(6) + "\n";
+                        TextView mTextView = new TextView(getContext());
+                        mTextView.setText(entry);
+                        root.addView(mTextView);
+                        mCursor.moveToNext();
+                    }
+                }catch (Exception e){
+                    Log.d("ERROR", e.toString());
+                }
             }
         }
     }
