@@ -27,6 +27,7 @@
  - Research similar workflow apps, and see what we could use 
 
 
+#TO DO AFTER ^
  - class list, best way to display it
     - last name, first name: click to display fully
     - should not be editable
