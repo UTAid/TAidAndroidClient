@@ -134,6 +134,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     });
                 }
             }else{
+                //Tested. works .
                 Cursor cursor = dbAdapter.getAllStudents();
                 MultiEntryFragment studentFragment = new MultiEntryFragment().newInstance("", FRAG_TYPE.STUDENT, cursor);
                 fragmentManager = getSupportFragmentManager();
