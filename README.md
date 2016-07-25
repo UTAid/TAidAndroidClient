@@ -22,9 +22,13 @@
 #### Anya needs to assign more tasks!
 
 #IN PROGRESS
+ - Modifiable lists. (if possible integrate with google calendat) 
+ - RESEARCH frameworks
+  
+ 
  - make it modular!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     -example: if i want to edit a teams mark, simply click on one of the members and be able to edit the team's mark
- - Research similar workflow apps, and see what we could use 
+ - Research similar workflow apps, and see what we could use.
 
 
 #TO DO AFTER ^
