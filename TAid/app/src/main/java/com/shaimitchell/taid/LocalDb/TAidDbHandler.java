@@ -11,13 +11,13 @@ public class TAidDbHandler extends SQLiteOpenHelper {
 
     public static final int DATABASE_VERSION = 1;
     public static final String DATABASE_NAME = "TAid.db";
-    public static final String DB_PATH= "/data/data/taid/databases";
 
     // used for singleton pattern
     private static TAidDbHandler dbInstance;
 
     private static final String TEXT_TYPE = " TEXT";
     private static final String COMMA_SEP = ",";
+
     public static final String CREATE_STUDENT_TABLE =
             "CREATE TABLE IF NOT EXISTS " + DbContract.StudentTable.TABLE_NAME + " (" +
                     DbContract.StudentTable. _ID + " INTEGER " + COMMA_SEP +
@@ -27,9 +27,39 @@ public class TAidDbHandler extends SQLiteOpenHelper {
                     DbContract.StudentTable.COLUMN_NAME_FIRST_NAME + TEXT_TYPE + COMMA_SEP +
                     DbContract.StudentTable.COLUMN_NAME_LAST_NAME + TEXT_TYPE + COMMA_SEP +
                     DbContract.StudentTable.COLUMN_NAME_EMAIL + TEXT_TYPE + COMMA_SEP +
-                    "PRIMARY KEY ("+ DbContract.StudentTable._ID + COMMA_SEP+ DbContract.StudentTable.COLUMN_NAME_STUDENT_NUMBER + ")"+  ") UNIQUE (" + DbContract.StudentTable.COLUMN_NAME_STUDENT_NUMBER + ") ON CONFLICT REPLACE )";
+                    " UNIQUE ("+DbContract.StudentTable.COLUMN_NAME_STUDENT_NUMBER +
+                    ") ON CONFLICT REPLACE );";
+
     public static final String DELETE_STUDENT_TABLE =
             "DROP TABLE IF EXISTS " + DbContract.StudentTable.TABLE_NAME;
+
+    public static final String CREATE_INSTRUCTOR_TABLE =
+            "CREATE TABLE IF NOT EXISTS " + DbContract.InstructorTable.TABLE_NAME + " (" +
+                    DbContract.InstructorTable. _ID + " INTEGER " + COMMA_SEP +
+                    DbContract.InstructorTable.COLUMN_NAME_URL + TEXT_TYPE + COMMA_SEP +
+                    DbContract.InstructorTable.COLUMN_NAME_UNIVERSITY_ID + TEXT_TYPE + COMMA_SEP +
+                    DbContract.InstructorTable.COLUMN_NAME_FIRST_NAME + TEXT_TYPE + COMMA_SEP +
+                    DbContract.InstructorTable.COLUMN_NAME_LAST_NAME + TEXT_TYPE + COMMA_SEP +
+                    DbContract.InstructorTable.COLUMN_NAME_EMAIL + TEXT_TYPE + COMMA_SEP +
+                    " UNIQUE (" +DbContract.InstructorTable.COLUMN_NAME_UNIVERSITY_ID +
+                    ") ON CONFLICT REPLACE );";
+
+    public static final String DELETE_INSTRUCTOR_TABLE =
+            "DROP TABLE IF EXISTS " + DbContract.InstructorTable.TABLE_NAME;
+
+    public static final String CREATE_TEACHING_ASSISTANT_TABLE =
+            "CREATE TABLE IF NOT EXISTS " + DbContract.TeachingAssistantTable.TABLE_NAME + " (" +
+                    DbContract.TeachingAssistantTable. _ID + " INTEGER " + COMMA_SEP +
+                    DbContract.TeachingAssistantTable.COLUMN_NAME_URL + TEXT_TYPE + COMMA_SEP +
+                    DbContract.TeachingAssistantTable.COLUMN_NAME_UNIVERSITY_ID + TEXT_TYPE +" NOT NULL" +COMMA_SEP +
+                    DbContract.TeachingAssistantTable.COLUMN_NAME_FIRST_NAME + TEXT_TYPE + COMMA_SEP +
+                    DbContract.TeachingAssistantTable.COLUMN_NAME_LAST_NAME + TEXT_TYPE + COMMA_SEP +
+                    DbContract.TeachingAssistantTable.COLUMN_NAME_EMAIL + TEXT_TYPE + COMMA_SEP +
+                    " UNIQUE ("+DbContract.TeachingAssistantTable.COLUMN_NAME_UNIVERSITY_ID +
+                    ") ON CONFLICT REPLACE );";
+
+    public static final String DELETE_TEACHING_ASSISTANT_TABLE =
+            "DROP TABLE IF EXISTS " + DbContract.TeachingAssistantTable.TABLE_NAME;
 
     public static synchronized TAidDbHandler getInstance(Context context) {
         // Use the application context, which will ensure that you
@@ -47,14 +77,18 @@ public class TAidDbHandler extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(DELETE_STUDENT_TABLE);
         db.execSQL(CREATE_STUDENT_TABLE);
+        db.execSQL(CREATE_INSTRUCTOR_TABLE);
+        db.execSQL(CREATE_TEACHING_ASSISTANT_TABLE);
+
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // add more for the other tables
         db.execSQL(DELETE_STUDENT_TABLE);
+        db.execSQL(DELETE_INSTRUCTOR_TABLE);
+        db.execSQL(DELETE_TEACHING_ASSISTANT_TABLE);
         onCreate(db);
     }
 

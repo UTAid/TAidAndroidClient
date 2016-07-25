@@ -17,6 +17,23 @@ public class DbContract {
         public static final String COLUMN_NAME_FIRST_NAME = "first_name";
         public static final String COLUMN_NAME_LAST_NAME = "last_name";
         public static final String COLUMN_NAME_EMAIL = "email";
+    }
 
+    public class InstructorTable implements BaseColumns {
+        public static final String TABLE_NAME = "instructor";
+        public static final String COLUMN_NAME_URL = "url";
+        public static final String COLUMN_NAME_UNIVERSITY_ID = "university_id";
+        public static final String COLUMN_NAME_FIRST_NAME = "first_name";
+        public static final String COLUMN_NAME_LAST_NAME = "last_name";
+        public static final String COLUMN_NAME_EMAIL = "email";
+    }
+
+    public class TeachingAssistantTable implements BaseColumns {
+        public static final String TABLE_NAME = "teachingAssistant";
+        public static final String COLUMN_NAME_URL = "url";
+        public static final String COLUMN_NAME_UNIVERSITY_ID = "university_id";
+        public static final String COLUMN_NAME_FIRST_NAME = "first_name";
+        public static final String COLUMN_NAME_LAST_NAME = "last_name";
+        public static final String COLUMN_NAME_EMAIL = "email";
     }
 }

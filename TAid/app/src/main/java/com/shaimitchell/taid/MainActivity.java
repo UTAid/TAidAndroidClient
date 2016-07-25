@@ -23,8 +23,6 @@ import com.android.volley.RequestQueue;
 import com.shaimitchell.taid.Enums.FRAG_TYPE;
 import com.shaimitchell.taid.Fragments.MultiEntryFragment;
 import com.shaimitchell.taid.LocalDb.DbAdapter;
-import com.shaimitchell.taid.Models.Student;
-
 import java.net.InetAddress;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, MultiEntryFragment.OnFragmentInteractionListener {
@@ -41,8 +39,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     FragmentManager fragmentManager;
     DbAdapter dbAdapter;
 
-    private boolean varToChange = false;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,8 +50,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mRequestQueue = RequestQueueSingleton.getInstance(this.getApplicationContext()).getRequestQueue();
 
         dbAdapter = new DbAdapter(this);
+            
+        // the following line of code is for easy debug purposes
         dbAdapter.resetDb();
-        dbAdapter = new DbAdapter(this);
 
         context = this;
 
@@ -66,7 +63,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 R.string.navigation_drawer_close);
 
         if (drawer != null) {
-//            drawer.setDrawerListener(toggle);
             drawer.addDrawerListener(toggle);
         }
         toggle.syncState();
@@ -124,7 +120,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 if (mRequestQueue != null) {
                     mRestServices.sendGetRequest(mRequestQueue, url);
                     mRestServices.setVariableChangeListener(new VariableChangeListener() {
-                        // this is where we need to check . this is all wrong, need to redo!
                         @Override
                         public void onVariableChanged(Boolean variableThatHasChanged) {
                             if (variableThatHasChanged && mTextView != null) {
@@ -135,68 +130,74 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 fragmentTransaction.add(R.id.fragment_container, studentFragment, "HELLO");
                                 fragmentTransaction.commit();
                             }
-//                            else if (!isInternetAvailable()) {
-//                                Log.i("check", "please work");
-//                                Cursor cursor = dbAdapter.getAllStudents();
-//                                MultiEntryFragment studentFragment = new MultiEntryFragment().newInstance("", FRAG_TYPE.STUDENT, cursor);
-//                                fragmentManager = getSupportFragmentManager();
-//                                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//                                fragmentTransaction.add(R.id.fragment_container, studentFragment, "HELLO");
-//                                fragmentTransaction.commit();
-//                            }
                         }
                     });
                 }
             }else{
-                Log.i("check", "please work");
                 Cursor cursor = dbAdapter.getAllStudents();
                 MultiEntryFragment studentFragment = new MultiEntryFragment().newInstance("", FRAG_TYPE.STUDENT, cursor);
-                Log.i("test", String.valueOf(studentFragment));
                 fragmentManager = getSupportFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.add(R.id.fragment_container, studentFragment, "HELLO");
                 fragmentTransaction.commit();
             }
-        } else if (id == R.id.all_instructors) {
+
+        }else if (id == R.id.all_instructors) {
             path = "api/v0/instructors/?format=json";
             url = buildURL(protocol, domain, port, path);
-            if (mRequestQueue != null) {
-                mRestServices.sendGetRequest(mRequestQueue, url);
-                mRestServices.setVariableChangeListener(new VariableChangeListener() {
-
-                    @Override
-                    public void onVariableChanged(Boolean variableThatHasChanged) {
-                        if (variableThatHasChanged && mTextView != null) {
-                            String resp = mRestServices.mResponse;
-                            MultiEntryFragment instructorFragment = new MultiEntryFragment().newInstance(resp, FRAG_TYPE.INSTRUCTOR, null);
-                            fragmentManager = getSupportFragmentManager();
-                            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                            fragmentTransaction.add(R.id.fragment_container, instructorFragment, "HELLO");
-                            fragmentTransaction.commit();
+            if (isConnected(this)) {
+                if (mRequestQueue != null) {
+                    mRestServices.sendGetRequest(mRequestQueue, url);
+                    mRestServices.setVariableChangeListener(new VariableChangeListener() {
+                        @Override
+                        public void onVariableChanged(Boolean variableThatHasChanged) {
+                            if (variableThatHasChanged && mTextView != null) {
+                                String resp = mRestServices.mResponse;
+                                MultiEntryFragment instructorFragment = new MultiEntryFragment().newInstance(resp, FRAG_TYPE.INSTRUCTOR, null);
+                                fragmentManager = getSupportFragmentManager();
+                                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                fragmentTransaction.add(R.id.fragment_container, instructorFragment, "HELLO");
+                                fragmentTransaction.commit();
+                            }
                         }
-                    }
-                });
+                    });
+                }
+            }else{
+                Cursor cursor = dbAdapter.getAllInstructors();
+                MultiEntryFragment instructorFragment = new MultiEntryFragment().newInstance("", FRAG_TYPE.INSTRUCTOR, cursor);
+                fragmentManager = getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.add(R.id.fragment_container, instructorFragment, "HELLO");
+                fragmentTransaction.commit();
             }
 
         } else if (id == R.id.all_teaching_assistants) {
             path = "api/v0/teaching_assistants/?format=json";
             url = buildURL(protocol, domain, port, path);
-            if (mRequestQueue != null) {
-                mRestServices.sendGetRequest(mRequestQueue, url);
-                mRestServices.setVariableChangeListener(new VariableChangeListener() {
-
-                    @Override
-                    public void onVariableChanged(Boolean variableThatHasChanged) {
-                        if (variableThatHasChanged && mTextView != null) {
-                            String resp = mRestServices.mResponse;
-                            MultiEntryFragment teachingAssistantFragment = new MultiEntryFragment().newInstance(resp, FRAG_TYPE.TEACHING_ASSISTANT, null);
-                            fragmentManager = getSupportFragmentManager();
-                            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                            fragmentTransaction.add(R.id.fragment_container, teachingAssistantFragment, "HELLO");
-                            fragmentTransaction.commit();
+            if (isConnected(this)) {
+                if (mRequestQueue != null) {
+                    mRestServices.sendGetRequest(mRequestQueue, url);
+                    mRestServices.setVariableChangeListener(new VariableChangeListener() {
+                        @Override
+                        public void onVariableChanged(Boolean variableThatHasChanged) {
+                            if (variableThatHasChanged && mTextView != null) {
+                                String resp = mRestServices.mResponse;
+                                MultiEntryFragment TAFragment = new MultiEntryFragment().newInstance(resp, FRAG_TYPE.TEACHING_ASSISTANT, null);
+                                fragmentManager = getSupportFragmentManager();
+                                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                fragmentTransaction.add(R.id.fragment_container, TAFragment, "HELLO");
+                                fragmentTransaction.commit();
+                            }
                         }
-                    }
-                });
+                    });
+                }
+            }else{
+                Cursor cursor = dbAdapter.getAllTeachingAssistants();
+                MultiEntryFragment TAFragment = new MultiEntryFragment().newInstance("", FRAG_TYPE.TEACHING_ASSISTANT, cursor);
+                fragmentManager = getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.add(R.id.fragment_container, TAFragment, "HELLO");
+                fragmentTransaction.commit();
             }
 
         } else if (id == R.id.all_tutorials) {

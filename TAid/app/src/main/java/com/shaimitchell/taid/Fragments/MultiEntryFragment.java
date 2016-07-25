@@ -15,7 +15,9 @@ import android.widget.TextView;
 import com.shaimitchell.taid.Enums.FRAG_TYPE;
 import com.shaimitchell.taid.LocalDb.DbAdapter;
 import com.shaimitchell.taid.LocalDb.TAidDbHandler;
+import com.shaimitchell.taid.Models.Instructor;
 import com.shaimitchell.taid.Models.Student;
+import com.shaimitchell.taid.Models.TeachingAssistant;
 import com.shaimitchell.taid.R;
 
 import org.json.JSONArray;
@@ -171,7 +173,6 @@ public class MultiEntryFragment extends Fragment {
     private void setupStudentResponse(LinearLayout root){
 
         String entry;
-
         Student student;
 
         if (mCursor == null) {
@@ -197,7 +198,7 @@ public class MultiEntryFragment extends Fragment {
                             "email: \t" + student.getEmail() + "\n";
 
                     DbAdapter dbAdapter = new DbAdapter(getContext());
-                    //.addStudent(student);
+                    dbAdapter.addStudent(student);
                     TextView mTextView = new TextView(getContext());
                     mTextView.setText(entry);
                     root.addView(mTextView);
@@ -232,34 +233,58 @@ public class MultiEntryFragment extends Fragment {
      * @param root - the root layout of the fragment
      */
     private void setupInstructorResponse(LinearLayout root){
-        String universityID;
-        String firstName;
-        String lastName;
-        String email;
 
-        String entry="";
+        String entry;
+        Instructor instructor;
 
-        try {
-            JSONObject jsonResponse = new JSONObject(dbEntry);
-            JSONArray resultsResponse = jsonResponse.optJSONArray("results");
+        if (mCursor == null) {
 
-            for (int i = 0; i < resultsResponse.length(); i++){
-                JSONObject jsonData = resultsResponse.getJSONObject(i);
-                universityID = jsonData.getString("university_id");
-                firstName = jsonData.getString("first_name");
-                lastName = jsonData.getString("last_name");
-                email = jsonData.getString("email");
+            try {
+                JSONObject jsonResponse = new JSONObject(dbEntry);
+                JSONArray resultsResponse = jsonResponse.optJSONArray("results");
 
-                entry = "university_id: \t" + universityID +"\n"+
-                        "first_name: \t" + firstName +"\n"+
-                        "last_name: \t" + lastName +"\n"+
-                        "email: \t" + email  +"\n";
-                TextView mTextView = new TextView(getContext());
-                mTextView.setText(entry);
-                root.addView(mTextView);
+                for (int i = 0; i < resultsResponse.length(); i++) {
+                    JSONObject jsonData = resultsResponse.getJSONObject(i);
+                    instructor = new Instructor(jsonData.getString("url"),
+                            jsonData.getString("university_id"),
+                            jsonData.getString("first_name"),
+                            jsonData.getString("last_name"),
+                            jsonData.getString("email"));
+
+                    entry = "url: \t" + instructor.getUrl() + "\n" +
+                            "university_id: \t" + instructor.getUniversityId() + "\n" +
+                            "first_name: \t" + instructor.getFirstName() + "\n" +
+                            "last_name: \t" + instructor.getLastName() + "\n" +
+                            "email: \t" + instructor.getEmail() + "\n";
+
+                    DbAdapter dbAdapter = new DbAdapter(getContext());
+                    dbAdapter.addInstructor(instructor);
+                    TextView mTextView = new TextView(getContext());
+                    mTextView.setText(entry);
+                    root.addView(mTextView);
+                }
+            } catch (JSONException e) {
+                Log.d("JsonException", e.toString());
             }
-        }catch(JSONException e){
-            Log.d("JsonException", e.toString());
+        }else{
+            if(mCursor.moveToFirst()) {
+                try {
+                    while (!mCursor.isAfterLast()) {
+                        entry = "url: \t" + mCursor.getString(1) + "\n" +
+                                "student_number: \t" + mCursor.getString(2) + "\n" +
+                                "first_name: \t" + mCursor.getString(3) + "\n" +
+                                "last_name: \t" + mCursor.getString(4) + "\n" +
+                                "email: \t" + mCursor.getString(5)+ "\n";
+                        TextView mTextView = new TextView(getContext());
+                        mTextView.setText(entry);
+                        root.addView(mTextView);
+                        mCursor.moveToNext();
+                    }
+                }catch (Exception e){
+                    Log.d("ERROR", e.toString());
+                }
+                mCursor.close();
+            }
         }
     }
 
@@ -268,34 +293,58 @@ public class MultiEntryFragment extends Fragment {
      * @param root - the root layout of the fragment
      */
     private void setupTAResponse(LinearLayout root){
-        String universityID;
-        String firstName;
-        String lastName;
-        String email;
 
-        String entry="";
+        String entry;
+        TeachingAssistant teachingAssistant;
 
-        try {
-            JSONObject jsonResponse = new JSONObject(dbEntry);
-            JSONArray resultsResponse = jsonResponse.optJSONArray("results");
+        if (mCursor == null) {
 
-            for (int i = 0; i < resultsResponse.length(); i++){
-                JSONObject jsonData = resultsResponse.getJSONObject(i);
-                universityID = jsonData.getString("university_id");
-                firstName = jsonData.getString("first_name");
-                lastName = jsonData.getString("last_name");
-                email = jsonData.getString("email");
+            try {
+                JSONObject jsonResponse = new JSONObject(dbEntry);
+                JSONArray resultsResponse = jsonResponse.optJSONArray("results");
 
-                entry = "university_id: \t" + universityID +"\n"+
-                        "first_name: \t" + firstName +"\n"+
-                        "last_name: \t" + lastName +"\n"+
-                        "email: \t" + email  +"\n";
-                TextView mTextView = new TextView(getContext());
-                mTextView.setText(entry);
-                root.addView(mTextView);
+                for (int i = 0; i < resultsResponse.length(); i++) {
+                    JSONObject jsonData = resultsResponse.getJSONObject(i);
+                    teachingAssistant = new TeachingAssistant(jsonData.getString("url"),
+                            jsonData.getString("university_id"),
+                            jsonData.getString("first_name"),
+                            jsonData.getString("last_name"),
+                            jsonData.getString("email"));
+
+                    entry = "url: \t" + teachingAssistant.getUrl() + "\n" +
+                            "university_id: \t" + teachingAssistant.getUniversityId() + "\n" +
+                            "first_name: \t" + teachingAssistant.getFirstName() + "\n" +
+                            "last_name: \t" + teachingAssistant.getLastName() + "\n" +
+                            "email: \t" + teachingAssistant.getEmail() + "\n";
+
+                    DbAdapter dbAdapter = new DbAdapter(getContext());
+                    dbAdapter.addTeachingAssistant(teachingAssistant);
+                    TextView mTextView = new TextView(getContext());
+                    mTextView.setText(entry);
+                    root.addView(mTextView);
+                }
+            } catch (JSONException e) {
+                Log.d("JsonException", e.toString());
             }
-        }catch(JSONException e){
-            Log.d("JsonException", e.toString());
+        }else{
+            if(mCursor.moveToFirst()) {
+                try {
+                    while (!mCursor.isAfterLast()) {
+                        entry = "url: \t" + mCursor.getString(1) + "\n" +
+                                "student_number: \t" + mCursor.getString(2) + "\n" +
+                                "first_name: \t" + mCursor.getString(3) + "\n" +
+                                "last_name: \t" + mCursor.getString(4) + "\n" +
+                                "email: \t" + mCursor.getString(5)+ "\n";
+                        TextView mTextView = new TextView(getContext());
+                        mTextView.setText(entry);
+                        root.addView(mTextView);
+                        mCursor.moveToNext();
+                    }
+                }catch (Exception e){
+                    Log.d("ERROR", e.toString());
+                }
+                mCursor.close();
+            }
         }
     }
 
