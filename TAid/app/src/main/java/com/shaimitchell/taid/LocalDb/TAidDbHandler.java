@@ -27,7 +27,7 @@ public class TAidDbHandler extends SQLiteOpenHelper {
                     DbContract.StudentTable.COLUMN_NAME_FIRST_NAME + TEXT_TYPE + COMMA_SEP +
                     DbContract.StudentTable.COLUMN_NAME_LAST_NAME + TEXT_TYPE + COMMA_SEP +
                     DbContract.StudentTable.COLUMN_NAME_EMAIL + TEXT_TYPE + COMMA_SEP +
-                    "PRIMARY KEY ("+ DbContract.StudentTable._ID + COMMA_SEP+ DbContract.StudentTable.COLUMN_NAME_STUDENT_NUMBER + ")"+  " )";
+                    "PRIMARY KEY ("+ DbContract.StudentTable._ID + COMMA_SEP+ DbContract.StudentTable.COLUMN_NAME_STUDENT_NUMBER + ")"+  ") UNIQUE (" + DbContract.StudentTable.COLUMN_NAME_STUDENT_NUMBER + ") ON CONFLICT REPLACE )";
     public static final String DELETE_STUDENT_TABLE =
             "DROP TABLE IF EXISTS " + DbContract.StudentTable.TABLE_NAME;
 
