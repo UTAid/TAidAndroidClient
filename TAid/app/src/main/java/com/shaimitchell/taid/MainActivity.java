@@ -18,18 +18,22 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.TextView;
+
+import com.andexert.expandablelayout.library.ExpandableLayoutListView;
 import com.android.volley.RequestQueue;
 import com.shaimitchell.taid.Enums.FRAG_TYPE;
 import com.shaimitchell.taid.Fragments.MultiEntryFragment;
 import com.shaimitchell.taid.LocalDb.DbAdapter;
+
 import java.net.InetAddress;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, MultiEntryFragment.OnFragmentInteractionListener {
 
     private RestServices mRestServices = new RestServices();
     private String protocol = "http://";
-    private String domain = "192.168.2.20";
+    private String domain = "192.168.0.13";
     private String port = ":8000/";
     private String path;
     private String url;
@@ -38,6 +42,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     RequestQueue mRequestQueue;
     FragmentManager fragmentManager;
     DbAdapter dbAdapter;
+
+    private final String[] array = {"Hello", "World", "Android", "is", "Awesome", "World", "Android", "is", "Awesome", "World", "Android", "is", "Awesome", "World", "Android", "is", "Awesome"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,10 +55,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mTextView = (TextView) findViewById(R.id.text_view);
         mRequestQueue = RequestQueueSingleton.getInstance(this.getApplicationContext()).getRequestQueue();
 
+        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, R.layout.view_row, R.id.header_text, array);
+        final ExpandableLayoutListView expandableLayoutListView = (ExpandableLayoutListView) findViewById(R.id.listview);
+        //expandableLayoutListView.setAdapter(arrayAdapter);
+
         dbAdapter = new DbAdapter(this);
             
         // the following line of code is for easy debug purposes
-        dbAdapter.resetDb();
+        //dbAdapter.resetDb();
 
         context = this;
 

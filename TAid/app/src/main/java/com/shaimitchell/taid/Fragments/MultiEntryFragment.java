@@ -9,12 +9,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.andexert.expandablelayout.library.ExpandableLayoutListView;
 import com.shaimitchell.taid.Enums.FRAG_TYPE;
 import com.shaimitchell.taid.LocalDb.DbAdapter;
-import com.shaimitchell.taid.LocalDb.TAidDbHandler;
 import com.shaimitchell.taid.Models.Instructor;
 import com.shaimitchell.taid.Models.Student;
 import com.shaimitchell.taid.Models.TeachingAssistant;
@@ -23,6 +24,8 @@ import com.shaimitchell.taid.R;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 /**
  * A fragment used to display data from the database when there are supposed to be multiple entries
@@ -190,12 +193,7 @@ public class MultiEntryFragment extends Fragment {
                             jsonData.getString("last_name"),
                             jsonData.getString("email"));
 
-                    entry = "url: \t" + student.getUrl() + "\n" +
-                            "university_id: \t" + student.getUniversityId() + "\n" +
-                            "student_number: \t" + student.getStudentNumber() + "\n" +
-                            "first_name: \t" + student.getFirstName() + "\n" +
-                            "last_name: \t" + student.getLastName() + "\n" +
-                            "email: \t" + student.getEmail() + "\n";
+                    entry = student.getFirstName() +" "+ student.getLastName() +", Number: "+student.getStudentNumber();
 
                     DbAdapter dbAdapter = new DbAdapter(getContext());
                     dbAdapter.addStudent(student);
@@ -209,16 +207,24 @@ public class MultiEntryFragment extends Fragment {
         }else{
             if(mCursor.moveToFirst()) {
                 try {
+                    ArrayList<String> test = new ArrayList<>();
                     while (!mCursor.isAfterLast()) {
-                        entry = "url: \t" + mCursor.getString(1) + "\n" +
+                        entry = mCursor.getString(4) +" "+ mCursor.getString(5) +", Number: "+ mCursor.getString(3);
+                        /**entry = "url: \t" + mCursor.getString(1) + "\n" +
                                 "university_id: \t" + mCursor.getString(2) + "\n" +
                                 "student_number: \t" + mCursor.getString(3) + "\n" +
                                 "first_name: \t" + mCursor.getString(4) + "\n" +
                                 "last_name: \t" + mCursor.getString(5) + "\n" +
-                                "email: \t" + mCursor.getString(6) + "\n";
-                        TextView mTextView = new TextView(getContext());
-                        mTextView.setText(entry);
-                        root.addView(mTextView);
+                                "email: \t" + mCursor.getString(6) + "\n";**/
+                        test.add(entry);
+
+                        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getActivity(), R.layout.view_row, R.id.header_text, test);
+                        final ExpandableLayoutListView expandableLayoutListView = (ExpandableLayoutListView) getActivity().findViewById(R.id.listview);
+                        expandableLayoutListView.setAdapter(arrayAdapter);
+                        //arrayAdapter.add(String.valueOf(test));
+                        //TextView mTextView = new TextView(getContext());
+                        // mTextView.setText(entry);
+                        //root.addView(mTextView);
                         mCursor.moveToNext();
                     }
                 }catch (Exception e){
