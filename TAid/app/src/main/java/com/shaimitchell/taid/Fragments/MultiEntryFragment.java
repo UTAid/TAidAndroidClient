@@ -274,16 +274,19 @@ public class MultiEntryFragment extends Fragment {
             }
         }else{
             if(mCursor.moveToFirst()) {
+                ArrayList<String> test = new ArrayList<>();
                 try {
                     while (!mCursor.isAfterLast()) {
-                        entry = "url: \t" + mCursor.getString(1) + "\n" +
-                                "student_number: \t" + mCursor.getString(2) + "\n" +
-                                "first_name: \t" + mCursor.getString(3) + "\n" +
-                                "last_name: \t" + mCursor.getString(4) + "\n" +
-                                "email: \t" + mCursor.getString(5)+ "\n";
-                        TextView mTextView = new TextView(getContext());
+                        entry = mCursor.getString(3) + " " + mCursor.getString(4);
+
+                        test.add(entry);
+
+                        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getActivity(), R.layout.view_row, R.id.header_text, test);
+                        final ExpandableLayoutListView expandableLayoutListView = (ExpandableLayoutListView) getActivity().findViewById(R.id.listview);
+                        expandableLayoutListView.setAdapter(arrayAdapter);
+                        /**TextView mTextView = new TextView(getContext());
                         mTextView.setText(entry);
-                        root.addView(mTextView);
+                        root.addView(mTextView);**/
                         mCursor.moveToNext();
                     }
                 }catch (Exception e){
@@ -334,16 +337,14 @@ public class MultiEntryFragment extends Fragment {
             }
         }else{
             if(mCursor.moveToFirst()) {
+                ArrayList<String> test = new ArrayList<>();
                 try {
                     while (!mCursor.isAfterLast()) {
-                        entry = "url: \t" + mCursor.getString(1) + "\n" +
-                                "student_number: \t" + mCursor.getString(2) + "\n" +
-                                "first_name: \t" + mCursor.getString(3) + "\n" +
-                                "last_name: \t" + mCursor.getString(4) + "\n" +
-                                "email: \t" + mCursor.getString(5)+ "\n";
-                        TextView mTextView = new TextView(getContext());
+                        entry = mCursor.getString(3) + " " + mCursor.getString(4);
+
+                        /**TextView mTextView = new TextView(getContext());
                         mTextView.setText(entry);
-                        root.addView(mTextView);
+                        root.addView(mTextView);**/
                         mCursor.moveToNext();
                     }
                 }catch (Exception e){
