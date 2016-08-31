@@ -17,6 +17,9 @@ import com.shaimitchell.taid.LocalDb.DbAdapter;
 
 import java.util.Objects;
 
+/**
+ * Activity to display the class list from the tutorial that was most recently clicked on
+ */
 public class TutorialRecordDisplayActivity extends AppCompatActivity {
 
     @Override

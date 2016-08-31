@@ -7,6 +7,9 @@ import android.support.v7.widget.Toolbar;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+/**
+ * Activity to display a student record that has been cicked on
+ */
 public class StudentRecordDisplayActivity extends AppCompatActivity {
 
     @Override

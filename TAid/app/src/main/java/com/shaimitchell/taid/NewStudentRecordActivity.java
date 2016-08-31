@@ -18,6 +18,9 @@ import com.shaimitchell.taid.LocalDb.DbAdapter;
 import com.shaimitchell.taid.Models.StudentModel;
 import com.shaimitchell.taid.Models.TutorialModel;
 
+/**
+ * Activity to create a new student record and add it to a specific tutorial
+ */
 public class NewStudentRecordActivity extends AppCompatActivity {
 
     @Override

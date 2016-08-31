@@ -107,7 +107,7 @@ public class MultiEntryFragment extends Fragment {
         TextView mTextView;
 
         // Inflate the layout for this fragment
-        View mView = inflater.inflate(R.layout.fragment_student, container, false);
+        View mView = inflater.inflate(R.layout.fragment_multi_entry, container, false);
         LinearLayout root = (LinearLayout) mView.findViewById(R.id.multi_entry_fragment);
         TextView fTitle = (TextView)root.findViewById(R.id.fragment_title);
         fTitle.setText(fragTitle);
@@ -210,6 +210,9 @@ public class MultiEntryFragment extends Fragment {
                     TextView mTextView = new TextView(getContext());
                     mTextView.setText(entry);
                     root.addView(mTextView);
+
+                    // This click listener allows each TextView that is created to start a new
+                    // intent and  and display more info on the record that has been clicked on
                     mTextView.setOnClickListener(new View.OnClickListener(){
                         public void onClick(View v){
                             Intent mIntent = new Intent(getActivity(), StudentRecordDisplayActivity.class);
@@ -237,12 +240,9 @@ public class MultiEntryFragment extends Fragment {
                         final String lastName = mCursor.getString(5);
                         final String email = mCursor.getString(6);
 
-                        entry = "url: \t" + mCursor.getString(1) + "\n" +
-                                "university_id: \t" + mCursor.getString(2) + "\n" +
-                                "student_number: \t" + mCursor.getString(3) + "\n" +
-                                "first_name: \t" + mCursor.getString(4) + "\n" +
-                                "last_name: \t" + mCursor.getString(5) + "\n" +
-                                "email: \t" + mCursor.getString(6) + "\n";
+                        entry = mCursor.getString(5) +", " + mCursor.getString(4) + "\n" +
+
+                                "student_number: \t" + mCursor.getString(3) + "\n";
 
                         TextView mTextView = new TextView(getContext());
                         mTextView.setText(entry);

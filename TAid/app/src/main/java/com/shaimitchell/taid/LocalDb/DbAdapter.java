@@ -33,6 +33,11 @@ public class DbAdapter {
         dbHandler.close();
     }
 
+    /**
+     * Add student to local database
+     * @param student - passed student model
+     * @throws SQLException
+     */
     public void addStudent(StudentModel student) throws SQLException {
         ContentValues values = new ContentValues();
 
@@ -63,6 +68,10 @@ public class DbAdapter {
         this.close();
     }
 
+    /**
+     * queries the local database to return all students
+     * @return - a cursor object that holds the records from the student table
+     */
     public Cursor getAllStudents(){
         String query = "Select * FROM " + DbContract.StudentTable.TABLE_NAME;
 
@@ -73,6 +82,11 @@ public class DbAdapter {
         return cursor;
     }
 
+    /**
+     * adds an instructor to the local database
+     * @param instructor - passed an instructor model
+     * @throws SQLException
+     */
     public void addInstructor(InstructorModel instructor) throws SQLException {
         ContentValues values = new ContentValues();
 
@@ -102,6 +116,10 @@ public class DbAdapter {
         this.close();
     }
 
+    /**
+     * queries the local database to return all instructors
+     * @return - a cursor object that holds the records from the instructor table
+     */
     public Cursor getAllInstructors(){
         String query = "Select * FROM " + DbContract.InstructorTable.TABLE_NAME;
 
@@ -111,6 +129,11 @@ public class DbAdapter {
         return cursor;
     }
 
+    /**
+     * adds an TA to the local database
+     * @param teachingAssistant - passed a TA model
+     * @throws SQLException
+     */
     public void addTeachingAssistant(TeachingAssistantModel teachingAssistant) throws SQLException {
         ContentValues values = new ContentValues();
 
@@ -140,6 +163,10 @@ public class DbAdapter {
         this.close();
     }
 
+    /**
+     * queries the local database to return all TAs
+     * @return - a cursor object that holds the records from the TA table
+     */
     public Cursor getAllTeachingAssistants(){
         String query = "Select * FROM " + DbContract.TeachingAssistantTable.TABLE_NAME;
 
@@ -149,6 +176,11 @@ public class DbAdapter {
         return cursor;
     }
 
+    /**
+     * adds an TA to the tutorial database
+     * @param tutorial - passed a tutorial model
+     * @throws SQLException
+     */
     public void addTutorial(TutorialModel tutorial) throws SQLException {
         ContentValues values = new ContentValues();
 
@@ -177,6 +209,10 @@ public class DbAdapter {
         this.close();
     }
 
+    /**
+     * queries the local database to return all tutorials
+     * @return - a cursor object that holds the records from the tutorial table
+     */
     public Cursor getAllTutorials(){
         String query = "Select * FROM " + DbContract.TutorialTable.TABLE_NAME;
 
@@ -186,8 +222,13 @@ public class DbAdapter {
         return cursor;
     }
 
+    /**
+     * returns a specific record with the same code
+     * @param code - a string of the code for a specific tutorial
+     * @return - a cursor object that holds the record from the tutorial table
+     */
     public Cursor getTutorial(String code){
-        String query = "SELECT * FROM "+DbContract.TutorialTable.TABLE_NAME+" WHERE "+
+        String query = "SELECT * FROM "+ DbContract.TutorialTable.TABLE_NAME+" WHERE "+
                 DbContract.TutorialTable.COLUMN_NAME_CODE+ " = "+"\""+code+"\"";
 
         this.open();
@@ -198,6 +239,10 @@ public class DbAdapter {
 
     }
 
+    /**
+     * updates a specific row in the tutorial table
+     * @param tutorial - passed a tutorial model
+     */
     public void updateTutorial(TutorialModel tutorial){
         ContentValues values = new ContentValues();
 
@@ -230,6 +275,10 @@ public class DbAdapter {
 
     }
 
+    /**
+     * Resets the local db by deleting all the current tables and starting over.
+     * NOTE: Should only mainly be used for testing purposes.
+     */
     public void resetDb(){
         open();
         database.execSQL(dbHandler.DELETE_STUDENT_TABLE);
