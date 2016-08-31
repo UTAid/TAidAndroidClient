@@ -1,20 +1,21 @@
 package com.shaimitchell.taid.Models;
 
 /**
- * Created by shaimitchell on 16-07-24.
+ * Model class to create and manage Teaching Assistant entries
  */
-public class Instructor {
+public class TeachingAssistantModel {
 
     private String url;
     private String universityId;
     private String firstName;
     private String lastName;
     private String email;
+    private int updated = 0;
 
-    public Instructor(){}
+    public TeachingAssistantModel(){}
 
-    public Instructor(String url, String universityId, String firstName,
-                   String lastName, String email){
+    public TeachingAssistantModel(String url, String universityId, String firstName,
+                                  String lastName, String email){
 
         setUrl(url);
         setUniversityId(universityId);
@@ -61,5 +62,17 @@ public class Instructor {
 
     public String getEmail() {
         return email;
+    }
+
+    public void setUpdated(){
+        if (updated == 0){
+            updated = 1;
+        }else{
+            updated = 0;
+        }
+    }
+
+    public int getUpdated(){
+        return updated;
     }
 }

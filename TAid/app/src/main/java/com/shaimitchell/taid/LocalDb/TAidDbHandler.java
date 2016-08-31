@@ -20,14 +20,15 @@ public class TAidDbHandler extends SQLiteOpenHelper {
 
     public static final String CREATE_STUDENT_TABLE =
             "CREATE TABLE IF NOT EXISTS " + DbContract.StudentTable.TABLE_NAME + " (" +
-                    DbContract.StudentTable. _ID + " INTEGER " + COMMA_SEP +
+//                    DbContract.StudentTable. _ID + " INTEGER " + COMMA_SEP +
                     DbContract.StudentTable.COLUMN_NAME_URL + TEXT_TYPE + COMMA_SEP +
                     DbContract.StudentTable.COLUMN_NAME_STUDENT_NUMBER + TEXT_TYPE +" NOT NULL"+ COMMA_SEP +
                     DbContract.StudentTable.COLUMN_NAME_UNIVERSITY_ID + TEXT_TYPE + COMMA_SEP +
                     DbContract.StudentTable.COLUMN_NAME_FIRST_NAME + TEXT_TYPE + COMMA_SEP +
                     DbContract.StudentTable.COLUMN_NAME_LAST_NAME + TEXT_TYPE + COMMA_SEP +
                     DbContract.StudentTable.COLUMN_NAME_EMAIL + TEXT_TYPE + COMMA_SEP +
-                    " UNIQUE ("+DbContract.StudentTable.COLUMN_NAME_STUDENT_NUMBER +
+                    DbContract.StudentTable.COLUMN_NAME_UPDATED + " INTEGER " + COMMA_SEP +
+                    " UNIQUE ("+ DbContract.StudentTable.COLUMN_NAME_STUDENT_NUMBER +
                     ") ON CONFLICT REPLACE );";
 
     public static final String DELETE_STUDENT_TABLE =
@@ -35,13 +36,14 @@ public class TAidDbHandler extends SQLiteOpenHelper {
 
     public static final String CREATE_INSTRUCTOR_TABLE =
             "CREATE TABLE IF NOT EXISTS " + DbContract.InstructorTable.TABLE_NAME + " (" +
-                    DbContract.InstructorTable. _ID + " INTEGER " + COMMA_SEP +
+//                    DbContract.InstructorTable. _ID + " INTEGER " + COMMA_SEP +
                     DbContract.InstructorTable.COLUMN_NAME_URL + TEXT_TYPE + COMMA_SEP +
                     DbContract.InstructorTable.COLUMN_NAME_UNIVERSITY_ID + TEXT_TYPE + COMMA_SEP +
                     DbContract.InstructorTable.COLUMN_NAME_FIRST_NAME + TEXT_TYPE + COMMA_SEP +
                     DbContract.InstructorTable.COLUMN_NAME_LAST_NAME + TEXT_TYPE + COMMA_SEP +
                     DbContract.InstructorTable.COLUMN_NAME_EMAIL + TEXT_TYPE + COMMA_SEP +
-                    " UNIQUE (" +DbContract.InstructorTable.COLUMN_NAME_UNIVERSITY_ID +
+                    DbContract.InstructorTable.COLUMN_NAME_UPDATED + " INTEGER " + COMMA_SEP +
+                    " UNIQUE (" + DbContract.InstructorTable.COLUMN_NAME_UNIVERSITY_ID +
                     ") ON CONFLICT REPLACE );";
 
     public static final String DELETE_INSTRUCTOR_TABLE =
@@ -49,17 +51,31 @@ public class TAidDbHandler extends SQLiteOpenHelper {
 
     public static final String CREATE_TEACHING_ASSISTANT_TABLE =
             "CREATE TABLE IF NOT EXISTS " + DbContract.TeachingAssistantTable.TABLE_NAME + " (" +
-                    DbContract.TeachingAssistantTable. _ID + " INTEGER " + COMMA_SEP +
+//                    DbContract.TeachingAssistantTable. _ID + " INTEGER " + COMMA_SEP +
                     DbContract.TeachingAssistantTable.COLUMN_NAME_URL + TEXT_TYPE + COMMA_SEP +
                     DbContract.TeachingAssistantTable.COLUMN_NAME_UNIVERSITY_ID + TEXT_TYPE +" NOT NULL" +COMMA_SEP +
                     DbContract.TeachingAssistantTable.COLUMN_NAME_FIRST_NAME + TEXT_TYPE + COMMA_SEP +
                     DbContract.TeachingAssistantTable.COLUMN_NAME_LAST_NAME + TEXT_TYPE + COMMA_SEP +
                     DbContract.TeachingAssistantTable.COLUMN_NAME_EMAIL + TEXT_TYPE + COMMA_SEP +
-                    " UNIQUE ("+DbContract.TeachingAssistantTable.COLUMN_NAME_UNIVERSITY_ID +
+                    DbContract.TeachingAssistantTable.COLUMN_NAME_UPDATED + " INTEGER " + COMMA_SEP +
+                    " UNIQUE ("+ DbContract.TeachingAssistantTable.COLUMN_NAME_UNIVERSITY_ID +
                     ") ON CONFLICT REPLACE );";
 
     public static final String DELETE_TEACHING_ASSISTANT_TABLE =
             "DROP TABLE IF EXISTS " + DbContract.TeachingAssistantTable.TABLE_NAME;
+
+    public static final String CREATE_TUTORIAL_TABLE =
+            "CREATE TABLE IF NOT EXISTS " + DbContract.TutorialTable.TABLE_NAME + " (" +
+                    DbContract.TutorialTable.COLUMN_NAME_URL + TEXT_TYPE + COMMA_SEP +
+                    DbContract.TutorialTable.COLUMN_NAME_CODE + TEXT_TYPE +" NOT NULL"+ COMMA_SEP +
+                    DbContract.TutorialTable.COLUMN_NAME_TA + TEXT_TYPE +COMMA_SEP +
+                    DbContract.TutorialTable.COLUMN_NAME_STUDENTS + TEXT_TYPE + COMMA_SEP +
+                    DbContract.TutorialTable.COLUMN_NAME_UPDATED + " INTEGER " + COMMA_SEP +
+                    " UNIQUE ("+ DbContract.TutorialTable.COLUMN_NAME_CODE+
+                    ") ON CONFLICT REPLACE );";
+
+    public static final String DELETE_TUTORIAL_TABLE =
+            "DROP TABLE IF EXISTS " + DbContract.TutorialTable.TABLE_NAME;
 
     public static synchronized TAidDbHandler getInstance(Context context) {
         // Use the application context, which will ensure that you
@@ -80,6 +96,7 @@ public class TAidDbHandler extends SQLiteOpenHelper {
         db.execSQL(CREATE_STUDENT_TABLE);
         db.execSQL(CREATE_INSTRUCTOR_TABLE);
         db.execSQL(CREATE_TEACHING_ASSISTANT_TABLE);
+        db.execSQL(CREATE_TUTORIAL_TABLE);
 
     }
 
@@ -89,6 +106,7 @@ public class TAidDbHandler extends SQLiteOpenHelper {
         db.execSQL(DELETE_STUDENT_TABLE);
         db.execSQL(DELETE_INSTRUCTOR_TABLE);
         db.execSQL(DELETE_TEACHING_ASSISTANT_TABLE);
+        db.execSQL(DELETE_TUTORIAL_TABLE);
         onCreate(db);
     }
 

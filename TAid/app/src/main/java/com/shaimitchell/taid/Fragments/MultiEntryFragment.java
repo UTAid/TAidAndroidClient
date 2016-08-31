@@ -1,6 +1,7 @@
 package com.shaimitchell.taid.Fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -9,17 +10,18 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.andexert.expandablelayout.library.ExpandableLayoutListView;
 import com.shaimitchell.taid.Enums.FRAG_TYPE;
 import com.shaimitchell.taid.LocalDb.DbAdapter;
-import com.shaimitchell.taid.Models.Instructor;
-import com.shaimitchell.taid.Models.Student;
-import com.shaimitchell.taid.Models.TeachingAssistant;
+import com.shaimitchell.taid.Models.InstructorModel;
+import com.shaimitchell.taid.Models.StudentModel;
+import com.shaimitchell.taid.Models.TeachingAssistantModel;
+import com.shaimitchell.taid.Models.TutorialModel;
 import com.shaimitchell.taid.R;
+import com.shaimitchell.taid.StudentRecordDisplayActivity;
+import com.shaimitchell.taid.TutorialRecordDisplayActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -176,7 +178,7 @@ public class MultiEntryFragment extends Fragment {
     private void setupStudentResponse(LinearLayout root){
 
         String entry;
-        Student student;
+        StudentModel student;
 
         if (mCursor == null) {
 
@@ -186,20 +188,40 @@ public class MultiEntryFragment extends Fragment {
 
                 for (int i = 0; i < resultsResponse.length(); i++) {
                     JSONObject jsonData = resultsResponse.getJSONObject(i);
-                    student = new Student(jsonData.getString("url"),
-                            jsonData.getString("university_id"),
-                            jsonData.getString("student_number"),
-                            jsonData.getString("first_name"),
-                            jsonData.getString("last_name"),
-                            jsonData.getString("email"));
+                    final String url = jsonData.getString("url");
+                    final String universityId = jsonData.getString("university_id");
+                    final String studentNumber = jsonData.getString("student_number");
+                    final String firstName = jsonData.getString("first_name");
+                    final String lastName = jsonData.getString("last_name");
+                    final String email = jsonData.getString("email");
+                    student = new StudentModel(url, universityId, studentNumber, firstName, lastName,email);
 
-                    entry = student.getFirstName() +" "+ student.getLastName() +", Number: "+student.getStudentNumber();
+                    entry = student.getLastName() +", "+ student.getFirstName()+"\n"+
+                            R.string.student_number+": "+student.getStudentNumber()+"\n";
+//                    entry = "url: \t" + student.getUrl() + "\n" +
+//                            "university_id: \t" + student.getUniversityId() + "\n" +
+//                            "student_number: \t" + student.getStudentNumber() + "\n" +
+//                            "first_name: \t" + student.getFirstName() + "\n" +
+//                            "last_name: \t" + student.getLastName() + "\n" +
+//                            "email: \t" + student.getEmail() + "\n";
 
                     DbAdapter dbAdapter = new DbAdapter(getContext());
                     dbAdapter.addStudent(student);
                     TextView mTextView = new TextView(getContext());
                     mTextView.setText(entry);
                     root.addView(mTextView);
+                    mTextView.setOnClickListener(new View.OnClickListener(){
+                        public void onClick(View v){
+                            Intent mIntent = new Intent(getActivity(), StudentRecordDisplayActivity.class);
+                            mIntent.putExtra("url", url);
+                            mIntent.putExtra("university_id", universityId);
+                            mIntent.putExtra("student_number", studentNumber);
+                            mIntent.putExtra("first_name", firstName);
+                            mIntent.putExtra("last_name", lastName);
+                            mIntent.putExtra("email", email);
+                            getActivity().startActivity(mIntent);
+                        }
+                    });
                 }
             } catch (JSONException e) {
                 Log.d("JsonException", e.toString());
@@ -207,24 +229,37 @@ public class MultiEntryFragment extends Fragment {
         }else{
             if(mCursor.moveToFirst()) {
                 try {
-                    ArrayList<String> test = new ArrayList<>();
-                    while (!mCursor.isAfterLast()) {
-                        entry = mCursor.getString(4) +" "+ mCursor.getString(5) +", Number: "+ mCursor.getString(3);
-                        /**entry = "url: \t" + mCursor.getString(1) + "\n" +
+                    while (!mCursor.isAfterLast()){
+                        final String url = mCursor.getString(1);
+                        final String universityId = mCursor.getString(2);
+                        final String studentNumber = mCursor.getString(3);
+                        final String firstName = mCursor.getString(4);
+                        final String lastName = mCursor.getString(5);
+                        final String email = mCursor.getString(6);
+
+                        entry = "url: \t" + mCursor.getString(1) + "\n" +
                                 "university_id: \t" + mCursor.getString(2) + "\n" +
                                 "student_number: \t" + mCursor.getString(3) + "\n" +
                                 "first_name: \t" + mCursor.getString(4) + "\n" +
                                 "last_name: \t" + mCursor.getString(5) + "\n" +
-                                "email: \t" + mCursor.getString(6) + "\n";**/
-                        test.add(entry);
+                                "email: \t" + mCursor.getString(6) + "\n";
 
-                        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getActivity(), R.layout.view_row, R.id.header_text, test);
-                        final ExpandableLayoutListView expandableLayoutListView = (ExpandableLayoutListView) getActivity().findViewById(R.id.listview);
-                        expandableLayoutListView.setAdapter(arrayAdapter);
-                        //arrayAdapter.add(String.valueOf(test));
-                        //TextView mTextView = new TextView(getContext());
-                        // mTextView.setText(entry);
-                        //root.addView(mTextView);
+                        TextView mTextView = new TextView(getContext());
+                        mTextView.setText(entry);
+                        root.addView(mTextView);
+                        mTextView.setOnClickListener(new View.OnClickListener(){
+                            public void onClick(View v){
+                                TextView textView = (TextView)v;
+                                Intent mIntent = new Intent(getActivity(), StudentRecordDisplayActivity.class);
+                                mIntent.putExtra("url", url);
+                                mIntent.putExtra("university_id", universityId);
+                                mIntent.putExtra("student_number", studentNumber);
+                                mIntent.putExtra("first_name", firstName);
+                                mIntent.putExtra("last_name", lastName);
+                                mIntent.putExtra("email", email);
+                                getActivity().startActivity(mIntent);
+                            }
+                        });
                         mCursor.moveToNext();
                     }
                 }catch (Exception e){
@@ -241,7 +276,7 @@ public class MultiEntryFragment extends Fragment {
     private void setupInstructorResponse(LinearLayout root){
 
         String entry;
-        Instructor instructor;
+        InstructorModel instructor;
 
         if (mCursor == null) {
 
@@ -251,11 +286,12 @@ public class MultiEntryFragment extends Fragment {
 
                 for (int i = 0; i < resultsResponse.length(); i++) {
                     JSONObject jsonData = resultsResponse.getJSONObject(i);
-                    instructor = new Instructor(jsonData.getString("url"),
-                            jsonData.getString("university_id"),
-                            jsonData.getString("first_name"),
-                            jsonData.getString("last_name"),
-                            jsonData.getString("email"));
+                    final String url = jsonData.getString("url");
+                    final String universityId = jsonData.getString("university_id");
+                    final String firstName = jsonData.getString("first_name");
+                    final String lastName = jsonData.getString("last_name");
+                    final String email = jsonData.getString("email");
+                    instructor = new InstructorModel(url, universityId, firstName, lastName,email);
 
                     entry = "url: \t" + instructor.getUrl() + "\n" +
                             "university_id: \t" + instructor.getUniversityId() + "\n" +
@@ -267,6 +303,18 @@ public class MultiEntryFragment extends Fragment {
                     dbAdapter.addInstructor(instructor);
                     TextView mTextView = new TextView(getContext());
                     mTextView.setText(entry);
+                    mTextView.setOnClickListener(new View.OnClickListener(){
+                        public void onClick(View v){
+                            TextView textView = (TextView)v;
+                            Intent mIntent = new Intent(getActivity(), StudentRecordDisplayActivity.class);
+                            mIntent.putExtra("url", url);
+                            mIntent.putExtra("university_id", universityId);
+                            mIntent.putExtra("first_name", firstName);
+                            mIntent.putExtra("last_name", lastName);
+                            mIntent.putExtra("email", email);
+                            getActivity().startActivity(mIntent);
+                        }
+                    });
                     root.addView(mTextView);
                 }
             } catch (JSONException e) {
@@ -274,19 +322,29 @@ public class MultiEntryFragment extends Fragment {
             }
         }else{
             if(mCursor.moveToFirst()) {
-                ArrayList<String> test = new ArrayList<>();
                 try {
                     while (!mCursor.isAfterLast()) {
+                        final String url = mCursor.getString(1);
+                        final String universityId = mCursor.getString(2);
+                        final String firstName = mCursor.getString(3);
+                        final String lastName = mCursor.getString(4);
+                        final String email = mCursor.getString(5);
                         entry = mCursor.getString(3) + " " + mCursor.getString(4);
 
-                        test.add(entry);
-
-                        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getActivity(), R.layout.view_row, R.id.header_text, test);
-                        final ExpandableLayoutListView expandableLayoutListView = (ExpandableLayoutListView) getActivity().findViewById(R.id.listview);
-                        expandableLayoutListView.setAdapter(arrayAdapter);
-                        /**TextView mTextView = new TextView(getContext());
+                        TextView mTextView = new TextView(getContext());
                         mTextView.setText(entry);
-                        root.addView(mTextView);**/
+                        mTextView.setOnClickListener(new View.OnClickListener(){
+                            public void onClick(View v){
+                                Intent mIntent = new Intent(getActivity(), StudentRecordDisplayActivity.class);
+                                mIntent.putExtra("url", url);
+                                mIntent.putExtra("university_id", universityId);
+                                mIntent.putExtra("first_name", firstName);
+                                mIntent.putExtra("last_name", lastName);
+                                mIntent.putExtra("email", email);
+                                getActivity().startActivity(mIntent);
+                            }
+                        });
+                        root.addView(mTextView);
                         mCursor.moveToNext();
                     }
                 }catch (Exception e){
@@ -304,7 +362,7 @@ public class MultiEntryFragment extends Fragment {
     private void setupTAResponse(LinearLayout root){
 
         String entry;
-        TeachingAssistant teachingAssistant;
+        TeachingAssistantModel teachingAssistant;
 
         if (mCursor == null) {
 
@@ -314,7 +372,7 @@ public class MultiEntryFragment extends Fragment {
 
                 for (int i = 0; i < resultsResponse.length(); i++) {
                     JSONObject jsonData = resultsResponse.getJSONObject(i);
-                    teachingAssistant = new TeachingAssistant(jsonData.getString("url"),
+                    teachingAssistant = new TeachingAssistantModel(jsonData.getString("url"),
                             jsonData.getString("university_id"),
                             jsonData.getString("first_name"),
                             jsonData.getString("last_name"),
@@ -368,6 +426,109 @@ public class MultiEntryFragment extends Fragment {
      * @param root - the root layout of the fragment
      */
     private void setupTutorialResponse(LinearLayout root){
+        String entry;
+        TutorialModel tutorial;
 
+        if (mCursor == null) {
+
+            try {
+                JSONObject jsonResponse = new JSONObject(dbEntry);
+                JSONArray resultsResponse = jsonResponse.optJSONArray("results");
+
+                for (int i = 0; i < resultsResponse.length(); i++) {
+                    JSONObject jsonData = resultsResponse.getJSONObject(i);
+                    String studentData = jsonData.getString("students");
+                    String taData = jsonData.getString("ta");
+
+                    // get the student ids and ta ids into separate arrays
+                    String students = studentData.replace("[", "").replace("]", "");
+                    String tas = taData.replace("[", "").replace("]", "");
+
+                    tutorial = new TutorialModel(jsonData.getString("url"),
+                            jsonData.getString("code"), tas, students);
+
+                    final String url = tutorial.getUrl();
+                    final String code = tutorial.getCode();
+                    final String stuIDs = tutorial.getStudentIDs();
+                    final String taIDs = tutorial.getTaIDs();
+                    entry = "Code: \t" + code + "\n"+
+                            "Student IDs: "+stuIDs+"\n"+
+                            "TA IDs: " + taIDs+"\n";
+//                    for (int j = 0; j< studentArray.length;j++ ){
+//                        Log.d("shit", "Student: "+studentArray[j]);
+//                        entry += studentArray[j];
+//                        if (j+1 < studentArray.length){
+//                            entry += ", ";
+//                        }else{
+//                            entry += "\n";
+//                        }
+//                    }
+//                    entry += "TA IDs: ";
+//                    for (int k = 0; k < taArray.length; k++){
+//                        Log.d("shit", "TA: "+taArray[k]);
+//                        entry += taArray[k];
+//                        if (k+1 < taArray.length){
+//                            entry += ", ";
+//                        }else{
+//                            entry += "\n";
+//                        }
+//                    }
+
+                    DbAdapter dbAdapter = new DbAdapter(getContext());
+                    dbAdapter.addTutorial(tutorial);
+                    TextView mTextView = new TextView(getContext());
+                    mTextView.setText(entry);
+                    mTextView.setOnClickListener(new View.OnClickListener(){
+                        public void onClick(View v){
+                            Intent mIntent = new Intent(getActivity(),
+                                    TutorialRecordDisplayActivity.class);
+                            mIntent.putExtra("url", url);
+                            mIntent.putExtra("stuIds", stuIDs);
+                            mIntent.putExtra("taIDs", taIDs);
+                            mIntent.putExtra("code", code);
+                            getActivity().startActivity(mIntent);
+                        }
+                    });
+                    root.addView(mTextView);
+                }
+            } catch (JSONException e) {
+                Log.d("JsonException", e.toString());
+            }
+        }else{
+            if(mCursor.moveToFirst()) {
+                ArrayList<String> test = new ArrayList<>();
+                try {
+                    while (!mCursor.isAfterLast()) {
+                        entry = "Code: \t" + mCursor.getString(1) + "\n"+
+                                "Student IDs: "+mCursor.getString(3)+"\n"+
+                                "TA IDs: " + mCursor.getString(2)+"\n";
+
+                        final String url = mCursor.getString(0);
+                        final String code = mCursor.getString(1);
+                        final String stuIDs = mCursor.getString(3);
+                        final String taIDs = mCursor.getString(2);
+
+                        TextView mTextView = new TextView(getContext());
+                        mTextView.setText(entry);
+                        mTextView.setOnClickListener(new View.OnClickListener(){
+                            public void onClick(View v){
+                                Intent mIntent = new Intent(getActivity(),
+                                        TutorialRecordDisplayActivity.class);
+                                mIntent.putExtra("url", url);
+                                mIntent.putExtra("stuIds", stuIDs);
+                                mIntent.putExtra("taIDs", taIDs);
+                                mIntent.putExtra("code", code);
+                                getActivity().startActivity(mIntent);
+                            }
+                        });
+                        root.addView(mTextView);
+                        mCursor.moveToNext();
+                    }
+                }catch (Exception e){
+                    Log.d("ERROR", e.toString());
+                }
+                mCursor.close();
+            }
+        }
     }
 }

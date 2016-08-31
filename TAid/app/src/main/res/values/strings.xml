@@ -8,4 +8,18 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_content_student_record_display"></string>
+    <string name="title_activity_student_record_display_edittable"></string>
+
+    <string name="add_record">Add Record</string>
+    <string name="update_record">Update Record</string>
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="student_number">Student Number</string>
+    <string name="university_id">University ID</string>
+    <string name="email">Email</string>
+    <string name="title_activity_tutorial_record_display">TutorialRecordDisplayActivity</string>
+    <string name="class_list">Class List</string>
+
+
 </resources>

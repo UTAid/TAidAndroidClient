@@ -42,6 +42,8 @@ public class RestServices implements VariableChangeListener{
             }
         };
 
+        Log.d("TEST", "Inside get Request");
+
         requestQueue.add(request);
     }
 

@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private RestServices mRestServices = new RestServices();
     private String protocol = "http://";
-    private String domain = "192.168.0.13";
+    private String domain = "192.168.0.103";
     private String port = ":8000/";
     private String path;
     private String url;
@@ -42,8 +42,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     RequestQueue mRequestQueue;
     FragmentManager fragmentManager;
     DbAdapter dbAdapter;
-
-    private final String[] array = {"Hello", "World", "Android", "is", "Awesome", "World", "Android", "is", "Awesome", "World", "Android", "is", "Awesome", "World", "Android", "is", "Awesome"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,14 +53,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mTextView = (TextView) findViewById(R.id.text_view);
         mRequestQueue = RequestQueueSingleton.getInstance(this.getApplicationContext()).getRequestQueue();
 
-        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, R.layout.view_row, R.id.header_text, array);
-        final ExpandableLayoutListView expandableLayoutListView = (ExpandableLayoutListView) findViewById(R.id.listview);
-        //expandableLayoutListView.setAdapter(arrayAdapter);
-
         dbAdapter = new DbAdapter(this);
             
         // the following line of code is for easy debug purposes
-        //dbAdapter.resetDb();
+//        dbAdapter.resetDb();
 
         context = this;
 
@@ -214,22 +208,31 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.all_tutorials) {
             path = "api/v0/tutorials/?format=json";
             url = buildURL(protocol, domain, port, path);
-            if (mRequestQueue != null) {
-                mRestServices.sendGetRequest(mRequestQueue, url);
-                mRestServices.setVariableChangeListener(new VariableChangeListener() {
+            if (isConnected(this)) {
+                if (mRequestQueue != null) {
+                    mRestServices.sendGetRequest(mRequestQueue, url);
+                    mRestServices.setVariableChangeListener(new VariableChangeListener() {
 
-                    @Override
-                    public void onVariableChanged(Boolean variableThatHasChanged) {
-                        if (variableThatHasChanged && mTextView != null) {
-                            String resp = mRestServices.mResponse;
-                            MultiEntryFragment tutorialFragment = new MultiEntryFragment().newInstance(resp, FRAG_TYPE.TUTORIAL, null);
-                            fragmentManager = getSupportFragmentManager();
-                            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                            fragmentTransaction.add(R.id.fragment_container, tutorialFragment, "HELLO");
-                            fragmentTransaction.commit();
+                        @Override
+                        public void onVariableChanged(Boolean variableThatHasChanged) {
+                            if (variableThatHasChanged && mTextView != null) {
+                                String resp = mRestServices.mResponse;
+                                MultiEntryFragment tutorialFragment = new MultiEntryFragment().newInstance(resp, FRAG_TYPE.TUTORIAL, null);
+                                fragmentManager = getSupportFragmentManager();
+                                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                fragmentTransaction.add(R.id.fragment_container, tutorialFragment, "HELLO");
+                                fragmentTransaction.commit();
+                            }
                         }
-                    }
-                });
+                    });
+                }
+            }else{
+                Cursor cursor = dbAdapter.getAllTutorials();
+                MultiEntryFragment TAFragment = new MultiEntryFragment().newInstance("", FRAG_TYPE.TUTORIAL, cursor);
+                fragmentManager = getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.add(R.id.fragment_container, TAFragment, "HELLO");
+                fragmentTransaction.commit();
             }
 
         } else if (id == R.id.all_practicals) {

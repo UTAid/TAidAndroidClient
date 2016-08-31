@@ -6,8 +6,8 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <application
         android:allowBackup="true"
@@ -17,9 +17,10 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:configChanges="orientation|screenSize|keyboardHidden">
+            android:theme="@style/AppTheme.NoActionBar">
+
             <!--
             the following code allows me to handle orientation changes without
             fully dealing with it:
@@ -27,13 +28,25 @@
             -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
 
-        <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
+        <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
 
+        <activity
+            android:name=".StudentRecordDisplayActivity"
+            android:label="@string/title_activity_content_student_record_display"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".NewStudentRecordActivity"
+            android:label="@string/title_activity_student_record_display_edittable"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".TutorialRecordDisplayActivity"
+            android:label="@string/title_activity_tutorial_record_display"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>
